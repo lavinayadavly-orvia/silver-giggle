@@ -27,6 +27,7 @@
   --dk:#3a3f42; --warn:#e0a526; --crit:#e66767; --crit-soft:#3a2222; --warn-soft:#3a3120; --good-soft:#1d3320;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:
   linear-gradient(180deg, rgba(38,107,95,.09), transparent 420px),
   linear-gradient(90deg, rgba(37,106,191,.07), transparent 44%),
@@ -208,10 +209,9 @@ const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catc
 
 /* ---------------- static runtime ---------------- */
 const RESP_KEY = 'sem_responses_v2';
-const ADMIN_KEY = 'sem_admin_ok';
 const ADMIN_PASSCODE = 'silver-admin';
 let realDocs = store.get(RESP_KEY) || [];
-let adminAuthed = store.get(ADMIN_KEY) === true;
+let adminAuthed = false;
 document.body.dataset.admin = adminAuthed ? 'true' : 'false';
 function persistDocs() { store.set(RESP_KEY, realDocs); }
 function addDoc(doc) {
@@ -248,7 +248,7 @@ function renderAdminLogin(target) {
   </div>`;
   root.querySelector('#adminBtn').onclick = () => {
     if (root.querySelector('#adminPass').value === ADMIN_PASSCODE) {
-      adminAuthed = true; store.set(ADMIN_KEY, true); document.body.dataset.admin = 'true';
+      adminAuthed = true; document.body.dataset.admin = 'true';
       show(target);
     } else root.querySelector('#adminErr').hidden = false;
   };
@@ -924,7 +924,7 @@ document.addEventListener('mousemove', e => { const t = e.target.closest && e.ta
 /* ---------------- boot ---------------- */
 renderSurvey();
 const requestedView = location.hash.replace('#', '');
-if (['survey','dash','data'].includes(requestedView) && requestedView !== 'survey') show(requestedView);
+if (requestedView === 'admin') show('dash');
 </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ Responses are stored in the browser's local storage and can be exported as CSV f
 
 ## Access model
 
-Doctors who receive the survey link see only the Welcome screen and survey flow. Dashboard and Data are hidden behind the in-app admin login. The current static-build admin passcode is `silver-admin`; for production, protect the admin route with Cloudflare Access as the real authentication layer.
+Doctors who receive the survey link see only the Welcome screen and survey flow. Dashboard and Data are hidden behind a session-only in-app admin login. The current static-build admin passcode is `silver-admin`; for production, protect the admin route with Cloudflare Access as the real authentication layer.
 
 After submitting, respondents can download a PDF copy of their own responses from the completion screen.
 # silver-giggle
