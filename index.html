@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semaglutide Specialist Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#f4f5f4; --surface:#fcfcfb; --card:#ffffff; --ink:#1b2024; --muted:#5b6268; --faint:#8a9095; --rule:#e2e5e6;
+  --accent:#256abf; --accent-ink:#ffffff; --accent-soft:#e6eef9;
+  --s100:#cde2fb; --s200:#9ec5f4; --s300:#6da7ec; --s400:#3987e5; --s500:#256abf; --s600:#184f95; --s700:#0d366b;
+  --dk:#d9dcdd; --good:#0ca30c; --warn:#b77900; --crit:#d03b3b; --crit-soft:#fbe7e7; --warn-soft:#fdf3dc; --good-soft:#e3f4e3;
+  --serif:"Source Serif 4",Georgia,serif; --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121415; --surface:#1a1a19; --card:#1f2223; --ink:#eef0f1; --muted:#a9b0b5; --faint:#7d858a; --rule:#323739;
+    --accent:#5598e7; --accent-ink:#0b1320; --accent-soft:#1d2c3f;
+    --dk:#3a3f42; --warn:#e0a526; --crit:#e66767; --crit-soft:#3a2222; --warn-soft:#3a3120; --good-soft:#1d3320;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121415; --surface:#1a1a19; --card:#1f2223; --ink:#eef0f1; --muted:#a9b0b5; --faint:#7d858a; --rule:#323739;
+  --accent:#5598e7; --accent-ink:#0b1320; --accent-soft:#1d2c3f;
+  --dk:#3a3f42; --warn:#e0a526; --crit:#e66767; --crit-soft:#3a2222; --warn-soft:#3a3120; --good-soft:#1d3320;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+  linear-gradient(180deg, rgba(37,106,191,.08), transparent 340px),
+  var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:10px 16px}
+.top-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
+.brand{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand small{display:block;font-family:var(--sans);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
+.tabs{display:flex;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
+.tab{border:0;background:transparent;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.wrap{max-width:1180px;margin:0 auto;padding-top:24px}
+.narrow{max-width:780px;margin:0 auto}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-family:var(--serif);font-size:26px;line-height:1.2}
+h2{font-family:var(--serif);font-size:20px;line-height:1.25}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)} .faint{color:var(--faint)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:18px}
+.intro{display:grid;gap:18px;padding:26px}
+.intro-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(240px,.8fr);gap:18px;align-items:stretch}
+.intro-panel{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:16px;display:grid;gap:12px}
+.metric-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini-metric{border-left:3px solid var(--accent);padding-left:10px}
+.mini-metric b{display:block;font-family:var(--serif);font-size:22px;line-height:1.1}
+.mini-metric span{display:block;color:var(--muted);font-size:12px}
+.stack{display:grid;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:1px solid var(--rule);background:var(--card);padding:8px 16px;border-radius:7px;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.banner{border-radius:8px;padding:10px 14px;font-size:14px}
+.banner.warn{background:var(--warn-soft)} .banner.crit{background:var(--crit-soft)} .banner.info{background:var(--accent-soft)} .banner.good{background:var(--good-soft)}
+/* survey */
+.progress{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.secname{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.q{padding:18px 0;border-top:1px solid var(--rule);display:grid;gap:10px}
+.q:first-of-type{border-top:0}
+.qid{font-size:12px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums}
+.qtext{font-weight:600;font-size:16px}
+.qhelp{font-size:13px;color:var(--muted)}
+.qerr{font-size:13px;color:var(--crit);font-weight:600}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--rule);border-radius:7px;padding:8px 12px;cursor:pointer;background:var(--surface)}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin-top:4px;accent-color:var(--accent)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .rk{min-width:22px;height:22px;border-radius:11px;border:1px solid var(--rule);display:inline-grid;place-items:center;font-size:12px;font-weight:700}
+.opt.sel .rk{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.txt{width:100%;border:1px solid var(--rule);border-radius:6px;padding:7px 10px;background:var(--surface)}
+.num{width:120px;border:1px solid var(--rule);border-radius:6px;padding:7px 10px;background:var(--surface);font-variant-numeric:tabular-nums}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.grid-q{display:grid;gap:8px}
+.grow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--rule)}
+.grow:last-child{border-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--rule);border-radius:16px;padding:4px 11px;font-size:13px;cursor:pointer;background:var(--surface)}
+.chip.sel{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gsc{grid-template-columns:1fr}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+/* dashboard */
+.filters{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;border-bottom:1px solid var(--rule)}
+.filters label{font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.filters select{border:1px solid var(--rule);border-radius:6px;padding:5px 8px;background:var(--card)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px}
+.kpi{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px}
+.kpi b{display:block;font-family:var(--serif);font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--muted)}
+.dsec{display:grid;gap:12px;padding-top:22px}
+.dsec > header{display:grid;gap:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px}
+.cards > *, .dsec > *, .card{min-width:0}
+.cards.wide{grid-template-columns:1fr}
+.ctitle{display:grid;gap:2px;margin-bottom:10px}
+.ctitle .qid{font-size:11px}
+.n{font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:7px}
+.bar{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:13px}
+.bar .lab{overflow-wrap:anywhere}
+.track{display:block;height:12px;background:transparent;position:relative;min-width:0}
+.fill{display:block;height:100%;background:var(--s500);border-radius:0 4px 4px 0;min-width:2px}
+.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stack100{display:flex;height:14px;gap:2px;min-width:0}
+.stack100 i{display:block;height:100%}
+.stack100 i:first-child{border-radius:4px 0 0 4px} .stack100 i:last-child{border-radius:0 4px 4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.hm{overflow-x:auto}
+.hm table{border-collapse:separate;border-spacing:2px;width:100%;min-width:620px;font-size:13px}
+.hm th{font-weight:600;color:var(--muted);text-align:center;padding:4px;font-size:12px}
+.hm th.rl{text-align:left}
+.hm td{text-align:center;padding:8px 4px;border-radius:4px;font-variant-numeric:tabular-nums;font-weight:600}
+.hm td.rl{text-align:left;font-weight:400;background:transparent;padding-left:0}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:13px;min-width:420px}
+.tbl th,.tbl td{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
+.tbl th{color:var(--muted);font-weight:600}
+.tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+details.all{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px 16px}
+details.all summary{cursor:pointer;font-weight:600}
+details.all .cards{margin-top:12px}
+details.all .card{background:var(--surface)}
+.quotes{display:grid;gap:6px;font-size:13px;max-height:260px;overflow:auto}
+.quotes div{border-left:3px solid var(--rule);padding-left:8px}
+.ai{white-space:pre-wrap;font-size:14px;line-height:1.6}
+#tip{position:fixed;pointer-events:none;z-index:50;background:var(--ink);color:var(--card);font-size:12px;padding:6px 9px;border-radius:6px;max-width:280px;display:none;line-height:1.4}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:10px}
+.bar.ev{grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 118px}
+@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr} }
+@media (max-width:620px){ .bar.ev{grid-template-columns:minmax(0,1fr) 110px} .bar.ev .lab{grid-column:1/-1} .filters{position:static} .bar{grid-template-columns:minmax(0,1fr) 80px 40px} .grow{grid-template-columns:1fr} .tabs{margin-left:0} .filters{top:calc(env(safe-area-inset-top,0px) + 96px)} }
+@media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
+</style>
+</head>
+<body>
+
+<div class="top"><div class="top-in">
+  <div class="brand">Semaglutide Specialist Survey<small>Use by patient type · rDNA vs synthetic · specialty pathways · v2.0</small></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-survey" aria-selected="true" data-view="survey">Survey</button>
+    <button class="tab" role="tab" id="tab-dash" aria-selected="false" data-view="dash">Dashboard</button>
+    <button class="tab" role="tab" id="tab-data" aria-selected="false" data-view="data">Data</button>
+  </div>
+</div></div>
+
+<main class="wrap">
+  <section id="view-survey" class="narrow stack"></section>
+  <section id="view-dash" hidden></section>
+  <section id="view-data" class="narrow stack" hidden></section>
+</main>
+<div id="tip"></div>
+
+<script>
+const SCH = [{"id": "A0", "sec": "A. Consent and screening", "text": "This survey asks about your own clinical practice with GLP-1 therapies, including semaglutide, across different patient types. It takes 15–20 minutes. Responses are anonymous and reported only in aggregate. No product is promoted. You may skip any question or stop at any time. Do you agree to take part?", "help": "", "type": "sc", "spec": "GEDC", "obj": "O0", "options": [{"c": 1, "t": "Yes, I agree"}, {"c": 2, "t": "No"}], "required": true}, {"id": "A1", "sec": "A. Consent and screening", "text": "What is your primary clinical specialty?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O0", "options": [{"c": 1, "t": "Obstetrics & Gynaecology (general)"}, {"c": 2, "t": "Reproductive medicine / infertility"}, {"c": 3, "t": "Endocrinology"}, {"c": 4, "t": "Diabetology / Internal medicine with a diabetes practice"}, {"c": 5, "t": "Cardiology"}, {"c": 97, "t": "Other"}], "required": true}, {"id": "A2", "sec": "A. Consent and screening", "text": "Which type of institution is your main place of clinical work?", "help": "Select the category that fits. You will name the institution in the next question.", "type": "sc", "spec": "GEDC", "obj": "O0", "options": [{"c": 1, "t": "Central government institute of national importance (autonomous)"}, {"c": 2, "t": "Other central government medical college or hospital (e.g., Ministry of Health, ESIC, Armed Forces)"}, {"c": 3, "t": "State government medical college or hospital"}, {"c": 4, "t": "Municipal corporation medical college or hospital"}, {"c": 5, "t": "Private medical college or teaching hospital"}, {"c": 6, "t": "Private or trust hospital without teaching"}, {"c": 97, "t": "Other"}], "required": true}, {"id": "A3", "sec": "A. Consent and screening", "text": "What is the name of your institution, and in which city is it?", "help": "For example: name of institute, city.", "type": "oe", "spec": "GEDC", "obj": "O0", "required": true}, {"id": "A4", "sec": "A. Consent and screening", "text": "What is your current designation?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O0", "options": [{"c": 1, "t": "Professor / Head of Department"}, {"c": 2, "t": "Additional or Associate Professor"}, {"c": 3, "t": "Assistant Professor"}, {"c": 4, "t": "Senior Resident"}, {"c": 5, "t": "Junior Resident / Postgraduate trainee"}, {"c": 6, "t": "Consultant (non-faculty)"}], "required": true}, {"id": "A5", "sec": "A. Consent and screening", "text": "In a typical week, how many outpatient (OPD) sessions do you personally conduct?", "help": "Enter a whole number.", "type": "num", "spec": "GEDC", "obj": "O0", "min": 0, "max": 14, "required": false}, {"id": "B1", "sec": "B. Practice profile and patient mix", "text": "In the last typical week, how many outpatients did you personally see?", "help": "Count patients you examined yourself, not the whole department.", "type": "num", "spec": "GEDC", "obj": "O1", "min": 0, "max": 1000, "required": false}, {"id": "B2", "sec": "B. Practice profile and patient mix", "text": "Of the patients you saw that week, roughly what share had each of the following? (A patient can be counted in more than one row.)", "help": "A rough estimate is fine. Choose the closest range for each row.", "type": "gridsc", "spec": "GEDC", "obj": "O1", "rows": ["Type 2 diabetes", "Obesity (by the cut-off you use)", "Established atherosclerotic cardiovascular disease", "Chronic kidney disease", "Heart failure", "Fatty liver disease (MASLD or MASH)", "Women aged 18–50 with obesity and a gynaecological condition"], "cols": [{"c": 1, "t": "None"}, {"c": 2, "t": "Under 10%"}, {"c": 3, "t": "10–24%"}, {"c": 4, "t": "25–49%"}, {"c": 5, "t": "50–74%"}, {"c": 6, "t": "75% or more"}], "asc": true, "mid": [0, 5, 17, 37, 62, 87], "required": false}, {"id": "B3", "sec": "B. Practice profile and patient mix", "text": "How confident are you in your answers to the last two questions?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O1", "options": [{"c": 1, "t": "Based on OPD register or electronic records"}, {"c": 2, "t": "Careful estimate"}, {"c": 3, "t": "Rough estimate"}], "required": true}, {"id": "B4", "sec": "B. Practice profile and patient mix", "text": "Which BMI cut-off do you use to define obesity in Indian adults?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O1", "options": [{"c": 1, "t": "≥ 25 kg/m²"}, {"c": 2, "t": "≥ 27.5 kg/m²"}, {"c": 3, "t": "≥ 30 kg/m²"}, {"c": 4, "t": "Waist circumference rather than BMI"}, {"c": 5, "t": "No fixed cut-off"}], "required": true}, {"id": "C1", "sec": "C. Semaglutide use by patient type", "text": "In the last 3 months, have you personally started any patient on a GLP-1 receptor agonist or dual agonist?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O2", "options": [{"c": 1, "t": "Yes"}, {"c": 2, "t": "No, although I am permitted to prescribe these"}, {"c": 3, "t": "No, my role or institution does not permit me to start them"}], "required": true}, {"id": "C2", "sec": "C. Semaglutide use by patient type", "text": "In the last month, how many patients did you personally start on each of the following?", "help": "Enter a whole number for each row (0 if none).", "type": "gridnum", "spec": "GEDC", "obj": "O2", "rows": ["Semaglutide injection", "Oral semaglutide", "Tirzepatide", "Liraglutide", "Other GLP-1 receptor agonist"], "max": null, "dk": false, "required": false}, {"id": "C3", "sec": "C. Semaglutide use by patient type", "text": "For each patient type, which statement best describes how you use semaglutide?", "help": "Select one per row. Answer for your own practice.", "type": "gridsc", "spec": "GEDC", "obj": "O3", "rows": ["Type 2 diabetes without cardiovascular or kidney disease", "Type 2 diabetes with established atherosclerotic cardiovascular disease", "Type 2 diabetes with chronic kidney disease", "Obesity without diabetes or cardiovascular disease", "Obesity with established cardiovascular disease, without diabetes", "Heart failure with preserved ejection fraction and obesity", "Fatty liver disease (MASLD or MASH)", "Prediabetes with obesity", "Obstructive sleep apnoea with obesity", "Knee osteoarthritis with obesity", "Women with obesity and PCOS or another gynaecological condition", "Adolescents with obesity"], "cols": [{"c": 1, "t": "I start it routinely"}, {"c": 2, "t": "I start it in selected patients"}, {"c": 3, "t": "I refer to another specialty to decide"}, {"c": 4, "t": "I do not use it for this group"}, {"c": 5, "t": "I do not see these patients"}], "required": false}, {"id": "C4", "sec": "C. Semaglutide use by patient type", "text": "For which of these patient types do you prefer tirzepatide over semaglutide?", "help": "Select all that apply.", "type": "mc", "spec": "GEDC", "obj": "O3", "options": [{"c": 1, "t": "Type 2 diabetes without cardiovascular or kidney disease"}, {"c": 2, "t": "Type 2 diabetes with established atherosclerotic cardiovascular disease"}, {"c": 3, "t": "Type 2 diabetes with chronic kidney disease"}, {"c": 4, "t": "Obesity without diabetes or cardiovascular disease"}, {"c": 5, "t": "Obesity with established cardiovascular disease, without diabetes"}, {"c": 6, "t": "Heart failure with preserved ejection fraction and obesity"}, {"c": 7, "t": "Fatty liver disease (MASLD or MASH)"}, {"c": 8, "t": "Prediabetes with obesity"}, {"c": 9, "t": "Obstructive sleep apnoea with obesity"}, {"c": 10, "t": "Knee osteoarthritis with obesity"}, {"c": 11, "t": "Women with obesity and PCOS or another gynaecological condition"}, {"c": 12, "t": "Adolescents with obesity"}, {"c": 95, "t": "I do not use tirzepatide"}, {"c": 96, "t": "I do not prefer tirzepatide for any group"}], "exclusive": [95, 96], "required": false}, {"id": "C5", "sec": "C. Semaglutide use by patient type", "text": "How strong do you consider the evidence for semaglutide in each of these situations?", "help": "Give your own view. Select one per row.", "type": "gridsc", "spec": "GEDC", "obj": "O4", "rows": ["Cardiovascular event reduction in obesity without diabetes", "Slowing kidney disease in type 2 diabetes", "Symptoms in heart failure with preserved ejection fraction", "Fatty liver disease with fibrosis (MASH)", "Weight and cycle regularity in PCOS", "Weight loss before fertility treatment"], "cols": [{"c": 1, "t": "Strong"}, {"c": 2, "t": "Moderate"}, {"c": 3, "t": "Weak"}, {"c": 4, "t": "No evidence"}], "required": false}, {"id": "C6", "sec": "C. Semaglutide use by patient type", "text": "What stops you from starting or recommending semaglutide more often? Choose up to 3 and rank them.", "help": "Rank 1 = most important.", "type": "rank", "spec": "GEDC", "obj": "O4", "options": [{"c": 1, "t": "Cost to the patient"}, {"c": 2, "t": "Gastrointestinal side effects"}, {"c": 3, "t": "Supply or availability"}, {"c": 4, "t": "Limited evidence for some patient types"}, {"c": 5, "t": "Weight regain after stopping"}, {"c": 6, "t": "Institutional restrictions on who can prescribe"}, {"c": 7, "t": "Outside my specialty scope"}, {"c": 8, "t": "Risk of pregnancy in women of reproductive age"}, {"c": 9, "t": "Uncertainty about the quality of some brands"}, {"c": 96, "t": "Nothing stops me"}, {"c": 97, "t": "Other (specify)"}], "exclusive": [96], "required": false}, {"id": "C7", "sec": "C. Semaglutide use by patient type", "text": "Of the last 10 patients you started on semaglutide, how many stopped within 3 months?", "help": "Enter 0–10.", "type": "num", "spec": "GEDC", "obj": "O4", "min": 0, "max": 10, "required": false}, {"id": "C8", "sec": "C. Semaglutide use by patient type", "text": "For those who stopped, what were the reasons? Select all you have seen, then mark the most common.", "help": "Select all that apply, then one most common.", "type": "mcsc", "spec": "GEDC", "obj": "O4", "options": [{"c": 1, "t": "Gastrointestinal side effects"}, {"c": 2, "t": "Cost"}, {"c": 3, "t": "Not enough benefit"}, {"c": 4, "t": "Drug not available"}, {"c": 5, "t": "Fear of injections"}, {"c": 6, "t": "Planning pregnancy or became pregnant"}, {"c": 7, "t": "Advised to stop by another doctor"}, {"c": 97, "t": "Other (specify)"}], "required": false}, {"id": "D1", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "Of the semaglutide prescriptions you wrote in the last month, roughly what share was for each of the following?", "help": "Percentages should add to 100.", "type": "gridnum", "spec": "GEDC", "obj": "O5", "rows": ["Novo Nordisk products (including brands marketed under licence)", "Other manufacturers’ brands", "Molecule name only, brand not specified"], "max": 100, "dk": false, "sum100": true, "required": false}, {"id": "D2", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "How is semaglutide available to patients in your institute?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O5", "options": [{"c": 1, "t": "Supplied free from the institute pharmacy"}, {"c": 2, "t": "Supplied at subsidised cost"}, {"c": 3, "t": "Available only in specific clinics"}, {"c": 4, "t": "Not supplied; patients buy it outside"}], "required": true}, {"id": "D3", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "How do most of your patients on semaglutide pay for it?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O5", "options": [{"c": 1, "t": "Out of pocket"}, {"c": 2, "t": "Government or employer health scheme reimbursement"}, {"c": 3, "t": "Free supply from the institute"}, {"c": 4, "t": "Private insurance"}], "required": true}, {"id": "D4", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "When choosing a specific semaglutide product for a patient, how important is each factor?", "help": "Select one per row. Please read each row carefully.", "type": "gridsc", "spec": "GEDC", "obj": "O5", "rows": ["Price to the patient", "Availability in the institute pharmacy", "Outcome trial evidence (e.g., cardiovascular or kidney outcomes)", "Indications approved on the label", "Manufacturer’s reputation for quality", "Published comparison trial against the original product", "Pen or device convenience", "Patient preference", "Attention check: please select “Not important” for this row", "Supply reliability"], "cols": [{"c": 1, "t": "Very important"}, {"c": 2, "t": "Important"}, {"c": 3, "t": "Somewhat important"}, {"c": 4, "t": "Not important"}], "required": false}, {"id": "D5", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "Before this survey, were you aware that semaglutide products sold in India are made by different processes: recombinant DNA (rDNA) technology or chemical synthesis?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "Yes, in detail"}, {"c": 2, "t": "Yes, in general terms"}, {"c": 3, "t": "No"}], "required": true}, {"id": "D6", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "To the best of your knowledge, how are these products made?", "help": "Select one per row.", "type": "gridsc", "spec": "GEDC", "obj": "O6", "rows": ["Original Novo Nordisk semaglutide", "Semaglutide brands launched by Indian manufacturers since March 2026"], "cols": [{"c": 1, "t": "rDNA technology"}, {"c": 2, "t": "Chemical synthesis"}, {"c": 3, "t": "Mixed, varies by brand"}], "required": false}, {"id": "D7", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "How much does the manufacturing process (rDNA or chemical synthesis) influence which semaglutide product you choose?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "A great deal"}, {"c": 2, "t": "Somewhat"}, {"c": 3, "t": "A little"}, {"c": 4, "t": "Not at all"}], "required": true}, {"id": "D8", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "Do you have any of the following concerns about semaglutide made by chemical synthesis?", "help": "Select all that apply.", "type": "mc", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "Lower efficacy"}, {"c": 2, "t": "Higher chance of antibody formation"}, {"c": 3, "t": "Impurities"}, {"c": 4, "t": "Lack of long-term data"}, {"c": 5, "t": "Inconsistent supply"}, {"c": 6, "t": "Recalls or quality alerts"}, {"c": 7, "t": "Pen or device quality"}, {"c": 96, "t": "No concerns"}], "exclusive": [96], "required": false}, {"id": "D9", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "Do you have any of the following concerns about rDNA-derived semaglutide (including the original product)?", "help": "Select all that apply.", "type": "mc", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "Price to patient"}, {"c": 2, "t": "Availability"}, {"c": 3, "t": "Supply consistency"}, {"c": 4, "t": "Host-cell-derived impurities"}, {"c": 5, "t": "Pen or device quality"}, {"c": 96, "t": "No concerns"}, {"c": 97, "t": "Other (specify)"}], "exclusive": [96], "required": false}, {"id": "D10", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "Would you switch a patient who is stable on one semaglutide brand to a different brand?", "help": "Select one.", "type": "sc", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "Yes, without concern"}, {"c": 2, "t": "Yes, but only for cost or availability reasons"}, {"c": 3, "t": "Only to a product made by the same process"}, {"c": 4, "t": "No"}], "required": true}, {"id": "D11", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "In the last 12 months, have you heard of a recall or quality alert for any semaglutide product in India?", "help": "If yes, name the product or source if you can.", "type": "scoe", "spec": "GEDC", "obj": "O6", "options": [{"c": 1, "t": "Yes (please specify product or source)"}, {"c": 2, "t": "No"}], "required": true}, {"id": "D12", "sec": "D. Original (rDNA) and synthetic semaglutide products", "text": "For which patient types, if any, would you specifically prefer rDNA-derived semaglutide over chemically synthesised semaglutide?", "help": "Select all that apply.", "type": "mc", "spec": "GEDC", "obj": "O7", "options": [{"c": 1, "t": "Type 2 diabetes without cardiovascular or kidney disease"}, {"c": 2, "t": "Type 2 diabetes with established atherosclerotic cardiovascular disease"}, {"c": 3, "t": "Type 2 diabetes with chronic kidney disease"}, {"c": 4, "t": "Obesity without diabetes or cardiovascular disease"}, {"c": 5, "t": "Obesity with established cardiovascular disease, without diabetes"}, {"c": 6, "t": "Heart failure with preserved ejection fraction and obesity"}, {"c": 7, "t": "Fatty liver disease (MASLD or MASH)"}, {"c": 8, "t": "Prediabetes with obesity"}, {"c": 9, "t": "Obstructive sleep apnoea with obesity"}, {"c": 10, "t": "Knee osteoarthritis with obesity"}, {"c": 11, "t": "Women with obesity and PCOS or another gynaecological condition"}, {"c": 12, "t": "Adolescents with obesity"}, {"c": 94, "t": "I would prefer chemically synthesised products for all patients"}, {"c": 95, "t": "No preference between processes"}], "exclusive": [94, 95], "required": false}, {"id": "E1", "sec": "E. Women with obesity and gynaecological conditions", "text": "Among women aged 18–50 with obesity whom you saw in the last month, roughly what share had each of the following? (A woman can have more than one.)", "help": "A rough estimate is fine. Choose the closest range for each row.", "type": "gridsc", "spec": "GED", "obj": "O8", "rows": ["PCOS", "Infertility or subfertility", "Abnormal uterine bleeding", "Endometrial hyperplasia", "Previous gestational diabetes", "Perimenopausal or postmenopausal symptoms"], "cols": [{"c": 1, "t": "None"}, {"c": 2, "t": "Under 10%"}, {"c": 3, "t": "10–24%"}, {"c": 4, "t": "25–49%"}, {"c": 5, "t": "50–74%"}, {"c": 6, "t": "75% or more"}], "asc": true, "mid": [0, 5, 17, 37, 62, 87], "required": false}, {"id": "E2", "sec": "E. Women with obesity and gynaecological conditions", "text": "Think of the last 10 such women you managed. How many received each of the following from you or on your referral?", "help": "Enter 0–10 per row. If you have seen fewer than 10, tick the box and use the number seen.", "type": "gridnum", "spec": "G", "obj": "O8", "flag": "Fewer than 10 such women (enter number seen)", "rows": ["Structured diet and exercise counselling", "Metformin", "Combined oral contraceptive or cyclical progestogen", "Inositol supplements", "Any GLP-1 receptor agonist or dual agonist", "Referral to another specialty for weight or metabolic care"], "max": 10, "dk": false, "required": false}, {"id": "E3", "sec": "E. Women with obesity and gynaecological conditions", "text": "Which of the following would lead you to consider semaglutide for a non-pregnant woman aged 18–50 with obesity and a gynaecological condition?", "help": "Select all that apply.", "type": "mc", "spec": "GED", "obj": "O8", "options": [{"c": 1, "t": "BMI ≥ 27.5 kg/m² with a weight-related condition"}, {"c": 2, "t": "BMI ≥ 30 kg/m²"}, {"c": 3, "t": "Type 2 diabetes or prediabetes"}, {"c": 4, "t": "No response to lifestyle measures after 3–6 months"}, {"c": 5, "t": "Intolerance of or poor response to metformin"}, {"c": 6, "t": "Hyperandrogenism not controlled with standard treatment"}, {"c": 7, "t": "Weight loss needed before planned conception or fertility treatment"}, {"c": 8, "t": "Fatty liver disease"}, {"c": 9, "t": "Established cardiovascular disease"}, {"c": 96, "t": "I would not consider semaglutide for this group"}, {"c": 97, "t": "Other (specify)"}], "exclusive": [96], "required": false}, {"id": "E4", "sec": "E. Women with obesity and gynaecological conditions", "text": "Which statement best describes your practice for starting semaglutide in the gynaecology OPD?", "help": "Select one.", "type": "sc", "spec": "G", "obj": "O8", "options": [{"c": 1, "t": "I already start it myself"}, {"c": 2, "t": "I would start it myself if a shared institutional protocol existed"}, {"c": 3, "t": "I would start it only with endocrinology or medicine co-management"}, {"c": 4, "t": "I would not start it myself; I refer"}], "required": true}, {"id": "E5", "sec": "E. Women with obesity and gynaecological conditions", "text": "Why would you not start semaglutide yourself?", "help": "Select all that apply.", "type": "mc", "spec": "G", "obj": "O8", "options": [{"c": 1, "t": "Not within gynaecology scope in my institute"}, {"c": 2, "t": "Lack of training in titration and monitoring"}, {"c": 3, "t": "Concern about managing side effects"}, {"c": 4, "t": "Departmental or institutional policy"}, {"c": 5, "t": "Medico-legal concern"}, {"c": 6, "t": "Endocrinology prefers to initiate"}, {"c": 97, "t": "Other (specify)"}], "required": false}, {"id": "E6", "sec": "E. Women with obesity and gynaecological conditions", "text": "When you think such a woman may need semaglutide, what do you usually do?", "help": "Select the option that happens most often.", "type": "sc", "spec": "G", "obj": "O8", "options": [{"c": 1, "t": "Start it myself"}, {"c": 2, "t": "Refer to endocrinology in my institute"}, {"c": 3, "t": "Refer to general medicine or diabetology in my institute"}, {"c": 4, "t": "Refer to a joint gynaecology–metabolic clinic"}, {"c": 5, "t": "Advise the patient to see a doctor outside the institute"}, {"c": 6, "t": "I do not usually consider semaglutide"}], "required": true}, {"id": "E7", "sec": "E. Women with obesity and gynaecological conditions", "text": "Does your institute have a written referral pathway between gynaecology and endocrinology or medicine for these women?", "help": "Select one.", "type": "sc", "spec": "GED", "obj": "O8", "options": [{"c": 1, "t": "Yes, written"}, {"c": 2, "t": "Informal arrangement only"}, {"c": 3, "t": "No"}], "required": true}, {"id": "E8", "sec": "E. Women with obesity and gynaecological conditions", "text": "For a new, non-urgent referral from gynaecology to endocrinology or diabetology, how many days does a patient usually wait for the first appointment?", "help": "Enter days. Tick if the figure comes from the appointment system or records.", "type": "num", "spec": "GED", "obj": "O8", "min": 0, "max": 365, "recFlag": true, "required": false}, {"id": "E9", "sec": "E. Women with obesity and gynaecological conditions", "text": "Of the last 10 women you referred for weight or metabolic care, how many do you know attended the first appointment?", "help": "Enter 0–10, or select I do not know the outcome.", "type": "num", "spec": "G", "obj": "O8", "min": 0, "max": 10, "dkCode": 96, "dkLabel": "I do not know the outcome of my referrals", "required": false}, {"id": "E10", "sec": "E. Women with obesity and gynaecological conditions", "text": "In the last month, how many patients did you receive on referral from obstetrics & gynaecology for weight or metabolic management?", "help": "Enter a whole number.", "type": "num", "spec": "ED", "obj": "O8", "min": 0, "max": null, "required": false}, {"id": "E11", "sec": "E. Women with obesity and gynaecological conditions", "text": "What causes women to drop out between referral and starting treatment? Choose up to 3 and rank them.", "help": "Rank 1 = most important.", "type": "rank", "spec": "GED", "obj": "O8", "options": [{"c": 1, "t": "Waiting time for appointment"}, {"c": 2, "t": "Travel distance or repeated visits"}, {"c": 3, "t": "Cost of the medicine"}, {"c": 4, "t": "Reluctance to take injections"}, {"c": 5, "t": "Weight not seen as a medical priority"}, {"c": 6, "t": "Unclear which department is responsible"}, {"c": 7, "t": "Repeated investigations before starting"}, {"c": 95, "t": "I have not observed drop-out"}, {"c": 97, "t": "Other (specify)"}], "exclusive": [95], "required": false}, {"id": "E12", "sec": "E. Women with obesity and gynaecological conditions", "text": "Is there a joint clinic where gynaecology and endocrinology or medicine see these women together?", "help": "Select one.", "type": "sc", "spec": "GED", "obj": "O8", "options": [{"c": 1, "t": "Yes, with regular scheduled sessions"}, {"c": 2, "t": "Occasionally, as needed"}, {"c": 3, "t": "No"}], "required": true}, {"id": "E13", "sec": "E. Women with obesity and gynaecological conditions", "text": "For a woman on semaglutide who plans to conceive, how long before trying to conceive do you advise stopping?", "help": "Select one.", "type": "sc", "spec": "GED", "obj": "O9", "options": [{"c": 1, "t": "Less than 1 month"}, {"c": 2, "t": "About 1 month"}, {"c": 3, "t": "About 2 months"}, {"c": 4, "t": "More than 2 months"}, {"c": 5, "t": "At a positive pregnancy test"}, {"c": 6, "t": "No standard advice"}, {"c": 7, "t": "I do not use semaglutide in women planning pregnancy"}], "required": true}, {"id": "E14", "sec": "E. Women with obesity and gynaecological conditions", "text": "Do you use GLP-1 therapy for weight loss before IVF or other fertility treatment?", "help": "Select one.", "type": "sc", "spec": "GE", "obj": "O9", "options": [{"c": 1, "t": "Yes, routinely"}, {"c": 2, "t": "Yes, in selected patients"}, {"c": 3, "t": "No"}, {"c": 4, "t": "Not applicable to my practice"}], "required": true}, {"id": "F1", "sec": "F. Specialty modules", "text": "Endocrinology and diabetology. Think of the last 10 patients with type 2 diabetes whose treatment you intensified beyond metformin. How many were started on each of the following?", "help": "Enter 0–10 per row. A patient can count in more than one row.", "type": "gridnum", "spec": "ED", "obj": "O10", "rows": ["GLP-1 receptor agonist (including semaglutide)", "Tirzepatide", "SGLT2 inhibitor", "DPP-4 inhibitor", "Sulfonylurea", "Insulin"], "max": 10, "dk": false, "required": false}, {"id": "F2", "sec": "F. Specialty modules", "text": "Endocrinology and diabetology. For patients with type 2 diabetes and chronic kidney disease, who usually decides whether to start semaglutide?", "help": "Select one.", "type": "sc", "spec": "ED", "obj": "O10", "options": [{"c": 1, "t": "I do"}, {"c": 2, "t": "Nephrology"}, {"c": 3, "t": "Shared decision between departments"}, {"c": 4, "t": "Semaglutide is not usually considered"}], "required": true}, {"id": "F3", "sec": "F. Specialty modules", "text": "Endocrinology and diabetology. In the last month, how many patients did you receive on referral from cardiology for diabetes or weight management?", "help": "Enter a whole number.", "type": "num", "spec": "ED", "obj": "O10", "min": 0, "max": null, "required": false}, {"id": "F4", "sec": "F. Specialty modules", "text": "Cardiology. For your patients with type 2 diabetes and established cardiovascular disease, who usually starts glucose-lowering drugs with cardiovascular benefit?", "help": "Select one.", "type": "sc", "spec": "C", "obj": "O11", "options": [{"c": 1, "t": "I start both GLP-1 receptor agonists and SGLT2 inhibitors"}, {"c": 2, "t": "I start SGLT2 inhibitors; I refer for GLP-1 receptor agonists"}, {"c": 3, "t": "I refer for both"}, {"c": 4, "t": "The patient’s physician or diabetologist manages this"}], "required": true}, {"id": "F5", "sec": "F. Specialty modules", "text": "Cardiology. Of your last 10 patients with type 2 diabetes and established cardiovascular disease, how many are currently taking each of the following?", "help": "Enter 0–10 per row.", "type": "gridnum", "spec": "C", "obj": "O11", "rows": ["A GLP-1 receptor agonist (including semaglutide)", "An SGLT2 inhibitor", "Neither"], "max": 10, "dk": false, "required": false}, {"id": "F6", "sec": "F. Specialty modules", "text": "Cardiology. In the last 3 months, roughly how many patients did you refer to, or receive from, each department?", "help": "Enter whole numbers.", "type": "gridnum", "spec": "C", "obj": "O11", "rows": ["Referred to endocrinology or diabetology", "Received from endocrinology or diabetology", "Referred to gynaecology", "Received from gynaecology"], "max": null, "dk": false, "required": false}, {"id": "F7", "sec": "F. Specialty modules", "text": "Cardiology. How often do you record a woman’s history of PCOS, gestational diabetes, pre-eclampsia or early menopause when assessing cardiovascular risk?", "help": "Select one.", "type": "sc", "spec": "C", "obj": "O11", "options": [{"c": 1, "t": "Always"}, {"c": 2, "t": "Most of the time"}, {"c": 3, "t": "Sometimes"}, {"c": 4, "t": "Rarely or never"}], "required": true}, {"id": "G1", "sec": "G. Research feasibility and close", "text": "Would your department consider taking part in an observational study of semaglutide use across patient types?", "help": "Select one. This does not commit you or your department.", "type": "sc", "spec": "GEDC", "obj": "O12", "options": [{"c": 1, "t": "Yes"}, {"c": 2, "t": "Possibly, depending on design"}, {"c": 3, "t": "No"}], "required": true}, {"id": "G2", "sec": "G. Research feasibility and close", "text": "About how many patients starting semaglutide could your OPD identify per month for such a study?", "help": "Enter a whole number.", "type": "num", "spec": "GEDC", "obj": "O12", "min": 0, "max": null, "required": false}, {"id": "G3", "sec": "G. Research feasibility and close", "text": "Which evidence would be most useful to your practice? Choose up to 3 and rank them.", "help": "Rank 1 = most useful.", "type": "rank", "spec": "GEDC", "obj": "O12", "options": [{"c": 1, "t": "Long-term comparison of rDNA-derived and chemically synthesised semaglutide"}, {"c": 2, "t": "Indian real-world cardiovascular or kidney outcomes"}, {"c": 3, "t": "Randomised trial of semaglutide in PCOS"}, {"c": 4, "t": "Safety around conception and early pregnancy"}, {"c": 5, "t": "Cost-effectiveness in the Indian public system"}, {"c": 6, "t": "Evidence in menopause"}, {"c": 97, "t": "Other (specify)"}], "required": false}, {"id": "G4", "sec": "G. Research feasibility and close", "text": "Is there anything about semaglutide use, product choice or referral in your institute that this survey has not captured?", "help": "Optional.", "type": "oe", "spec": "GEDC", "obj": "O3", "required": false}, {"id": "G5", "sec": "G. Research feasibility and close", "text": "May we contact you for a follow-up interview of about 30 minutes?", "help": "If yes, please share an email address or phone number.", "type": "sc", "spec": "GEDC", "obj": "O0", "options": [{"c": 1, "t": "Yes"}, {"c": 2, "t": "No"}], "required": true}];
+const BY = Object.fromEntries(SCH.map(q => [q.id, q]));
+const SECS = [...new Set(SCH.map(q => q.sec))];
+const SPEC = {1:'G',2:'G',3:'E',4:'D',5:'C'};
+const SPEC_NAME = {G:'Gynaecology',E:'Endocrinology',D:'Diabetology',C:'Cardiology'};
+const INST = {1:'Central institute of national importance',2:'Other central govt college/hospital',3:'State govt college/hospital',4:'Municipal college/hospital',5:'Private teaching hospital'};
+const isNum = v => typeof v === 'number' && !isNaN(v);
+const pos = v => isNum(v) && v > 0 && v < 90;
+const SHOW = {
+  C2: a => a.C1 === 1, C7: a => a.C1 === 1, C8: a => pos(a.C7),
+  D1: a => { const g = a.C2 || {}; return pos(g[0]) || pos(g[1]); },
+  D4: a => a.C1 === 1, D6: a => [1,2].includes(a.D5), D7: a => [1,2].includes(a.D5),
+  E5: a => a.E4 === 4, G2: a => [1,2].includes(a.G1)
+};
+const specOf = a => SPEC[a.A1];
+function visible(q, a) {
+  if (q.sec === SECS[0]) return q.id === 'A0' || a.A0 === 1;
+  const s = specOf(a); if (!s || !q.spec.includes(s)) return false;
+  return SHOW[q.id] ? SHOW[q.id](a) : true;
+}
+function terminated(a) {
+  if (a.A0 === 2) return 'Declined consent';
+  if (a.A1 === 97) return 'Specialty out of scope';
+  if (a.A2 === 97 || a.A2 === 6) return 'Institution out of scope';
+  if (a.A5 === 0) return 'No OPD sessions';
+  return null;
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }, del(k){ try { localStorage.removeItem(k); } catch(e){} } };
+
+/* ---------------- static runtime ---------------- */
+const RESP_KEY = 'sem_responses_v2';
+let realDocs = store.get(RESP_KEY) || [];
+function persistDocs() { store.set(RESP_KEY, realDocs); }
+function addDoc(doc) {
+  const id = 'resp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  realDocs = [{ _id: id, ...doc }, ...realDocs];
+  persistDocs();
+  if (VIEW === 'dash') renderDash();
+  if (VIEW === 'data') renderData();
+  return id;
+}
+
+/* ---------------- tabs ---------------- */
+let VIEW = 'survey';
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+function show(v) {
+  VIEW = v;
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v));
+  ['survey','dash','data'].forEach(k => document.getElementById('view-' + k).hidden = k !== v);
+  if (v === 'dash') renderDash(); if (v === 'data') renderData();
+  store.set('sem_tab', v); window.scrollTo(0, 0);
+}
+
+/* ---------------- survey ---------------- */
+let S = store.get('sem_draft') || { answers: {}, page: -1, startedAt: null };
+const sv = document.getElementById('view-survey');
+function pagesFor(a) { return SECS.filter(sec => SCH.some(q => q.sec === sec && visible(q, a))); }
+function renderSurvey(errors) {
+  const a = S.answers;
+  if (S.page === -1) {
+    sv.innerHTML = `<div class="card intro">
+      <div class="intro-grid"><div class="stack">
+        <span class="secname">Specialist survey</span>
+        <h1>Semaglutide use across specialist pathways</h1>
+        <p>This survey captures how gynaecology, endocrinology, diabetology and cardiology teams use GLP-1 therapies across patient types, how they think about rDNA-derived versus chemically synthesised products, and where referral pathways create friction.</p>
+        <p class="muted">About 15-20 minutes. Answers stay anonymous in the exported dataset. No product is promoted. Draft progress is saved on this device until submission.</p>
+        <div class="row"><button class="btn primary" id="startBtn">${Object.keys(a).length ? 'Continue survey' : 'Start survey'}</button>${Object.keys(a).length ? '<button class="btn" id="resetBtn">Start over</button>' : ''}</div>
+      </div><div class="intro-panel">
+        <div class="metric-row">
+          <div class="mini-metric"><b>${SCH.length}</b><span>coded questions</span></div>
+          <div class="mini-metric"><b>4</b><span>specialties</span></div>
+          <div class="mini-metric"><b>CSV</b><span>analysis export</span></div>
+        </div>
+        <div class="banner info">Built for Cloudflare Pages as a static survey cockpit. Use Cloudflare Access or another authenticated route when collecting identifiable respondent data.</div>
+      </div></div>
+    </div>`;
+    sv.querySelector('#startBtn').onclick = () => { S.page = 0; S.startedAt = S.startedAt || new Date().toISOString(); save(); renderSurvey(); };
+    const r = sv.querySelector('#resetBtn'); if (r) r.onclick = () => { S = { answers:{}, page:-1, startedAt:null }; save(); renderSurvey(); };
+    return;
+  }
+  if (S.page === 'done') {
+    sv.innerHTML = `<div class="card stack"><span class="secname">${S.doneKind === 'screen' ? 'Thank you' : 'Submitted'}</span><h1>${S.doneKind === 'screen' ? 'Thank you for your time' : 'Thank you, your response is recorded'}</h1><p class="muted">${S.doneKind === 'screen' ? 'This survey is for practising specialists in the four specialties at government and academic institutes. Based on your answers, the remaining questions do not apply.' : 'Your answers have been saved. You can close this page.'}</p>${S.saveMsg ? `<div class="banner ${S.saveOk ? 'good' : 'crit'}">${esc(S.saveMsg)}</div>` : ''}<div class="row"><button class="btn" id="newBtn">Record another response</button></div></div>`;
+    sv.querySelector('#newBtn').onclick = () => { S = { answers:{}, page:-1, startedAt:null }; save(); renderSurvey(); };
+    return;
+  }
+  const pages = pagesFor(a);
+  if (S.page >= pages.length) S.page = pages.length - 1;
+  const sec = pages[S.page];
+  const qs = SCH.filter(q => q.sec === sec && visible(q, a));
+  const pct = Math.round(100 * (S.page) / Math.max(pages.length, 1));
+  sv.innerHTML = `<div class="progress" aria-label="Progress"><i style="width:${pct}%"></i></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><span class="secname">${esc(sec.replace(/^[A-Z]\. /, ''))}</span><span class="n">Part ${S.page + 1} of ${pages.length}</span></div>
+    <div id="qs">${qs.map(q => qHTML(q, a, errors && errors[q.id])).join('')}</div>
+    <div class="nav"><button class="btn" id="backBtn" ${S.page === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" id="nextBtn">${S.page === pages.length - 1 ? 'Submit' : 'Next'}</button></div></div>`;
+  bindQ(qs);
+  sv.querySelector('#backBtn').onclick = () => { S.page--; save(); renderSurvey(); window.scrollTo(0,0); };
+  sv.querySelector('#nextBtn').onclick = next;
+}
+function save() { store.set('sem_draft', S); }
+function qHTML(q, a, err) {
+  const v = a[q.id];
+  let body = '';
+  const optRow = (o, type, checked, extra = '') => `<label class="opt ${checked ? 'sel' : ''}"><input type="${type}" name="${q.id}" value="${o.c}" ${checked ? 'checked' : ''}><span>${esc(o.t)}${extra}</span></label>`;
+  if (q.type === 'sc' || q.type === 'scoe') {
+    const cur = q.type === 'scoe' ? (v || {}).v : v;
+    body = `<div class="opts">${q.options.map(o => optRow(o, 'radio', cur === o.c)).join('')}</div>`;
+    if (q.options.some(o => o.c === 97) && cur === 97) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
+    if (q.id === 'G5' && cur === 1) body += `<input class="txt" data-contact="G5" type="text" autocomplete="email" placeholder="Email or phone" value="${esc(a.G5_contact)}">`;
+    if (q.type === 'scoe' && cur === 1) body += `<input class="txt" data-scoe="${q.id}" placeholder="Product or source" value="${esc((v || {}).text)}">`;
+  } else if (q.type === 'mc' || q.type === 'mcsc') {
+    const sel = q.type === 'mcsc' ? ((v || {}).sel || []) : (v || []);
+    body = `<div class="opts">${q.options.map(o => optRow(o, 'checkbox', sel.includes(o.c))).join('')}</div>`;
+    if (sel.includes(97)) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
+    if (q.type === 'mcsc') {
+      const choices = q.options.filter(o => sel.includes(o.c) && o.c < 90);
+      if (choices.length > 1) body += `<div class="qhelp">Which was the most common?</div><div class="chips">${choices.map(o => `<button type="button" class="chip ${(v || {}).top === o.c ? 'sel' : ''}" data-top="${q.id}" data-c="${o.c}">${esc(o.t)}</button>`).join('')}</div>`;
+    }
+  } else if (q.type === 'rank') {
+    const order = v || [];
+    body = `<div class="opts">${q.options.map(o => { const i = order.indexOf(o.c); const ex = o.c >= 90; return `<button type="button" class="opt ${i >= 0 ? 'sel' : ''}" data-rank="${q.id}" data-c="${o.c}" style="text-align:left"><span class="rk">${i >= 0 ? (ex ? '✓' : i + 1) : ''}</span><span>${esc(o.t)}</span></button>`; }).join('')}</div>`;
+    if (order.includes(97)) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
+  } else if (q.type === 'num') {
+    const dk = isNum(v) && v === (q.dkCode || 98) && (q.max == null || v > q.max);
+    body = `<div class="row"><input class="num" type="number" inputmode="numeric" data-num="${q.id}" min="${q.min ?? 0}" ${q.max != null ? `max="${q.max}"` : ''} value="${isNum(v) && !dk ? v : ''}" ${dk ? 'disabled' : ''} aria-label="${esc(q.text)}">
+      ${q.dkCode ? `<label class="chk"><input type="checkbox" data-dk="${q.id}" ${dk ? 'checked' : ''}> ${esc(q.dkLabel)}</label>` : ''}
+      ${q.recFlag ? `<label class="chk"><input type="checkbox" data-rec="${q.id}" ${a[q.id + '_rec'] ? 'checked' : ''}> From appointment system or records</label>` : ''}</div>`;
+  } else if (q.type === 'gridnum') {
+    const g = v || {};
+    body = `<div class="grid-q">${q.rows.map((r, i) => { const dk = g[i] === 98 && (q.max == null || q.max < 98); return `<div class="grow"><span>${esc(r)}</span><span class="row"><input class="num" type="number" inputmode="numeric" data-gnum="${q.id}" data-i="${i}" min="0" ${q.max != null ? `max="${q.max}"` : ''} value="${isNum(g[i]) && !dk ? g[i] : ''}" ${dk ? 'disabled' : ''} aria-label="${esc(r)}">${q.dk ? `<label class="chk"><input type="checkbox" data-gdk="${q.id}" data-i="${i}" ${dk ? 'checked' : ''}> Don’t know</label>` : ''}</span></div>`; }).join('')}</div>`;
+    if (q.sum100) { const s = q.rows.reduce((t, _, i) => t + (isNum(g[i]) && g[i] !== 98 ? g[i] : 0), 0); body += `<div class="qhelp">Total: <b id="sum-${q.id}">${s}%</b></div>`; }
+    if (q.flag) body += `<label class="chk"><input type="checkbox" data-flag="${q.id}" ${a[q.id + '_fewer'] ? 'checked' : ''}> Fewer than 10 such women</label>${a[q.id + '_fewer'] ? ` <input class="num" type="number" data-seen="${q.id}" min="1" max="9" placeholder="Number seen" value="${esc(a[q.id + '_seen'])}">` : ''}`;
+  } else if (q.type === 'gridsc') {
+    const g = v || {};
+    body = `<div class="grid-q">${q.rows.map((r, i) => `<div class="grow gsc"><span>${esc(r)}</span><div class="chips">${q.cols.map(c => `<button type="button" class="chip ${g[i] === c.c ? 'sel' : ''}" data-gsc="${q.id}" data-i="${i}" data-c="${c.c}">${esc(c.t)}</button>`).join('')}</div></div>`).join('')}</div>`;
+  } else if (q.type === 'oe') {
+    body = `<textarea class="txt" rows="3" data-oe="${q.id}">${esc(v)}</textarea>`;
+  }
+  return `<div class="q" id="q-${q.id}"><div class="qtext">${esc(q.text)}</div>${q.help ? `<div class="qhelp">${esc(q.help)}</div>` : ''}${body}${err ? `<div class="qerr" role="alert">${esc(err)}</div>` : ''}</div>`;
+}
+function bindQ(qs) {
+  const a = S.answers, root = sv;
+  const rerender = () => { save(); const y = window.scrollY; renderSurvey(); window.scrollTo(0, y); };
+  root.querySelectorAll('input[type=radio]').forEach(el => el.onchange = () => { const q = BY[el.name]; const c = +el.value; if (q.type === 'scoe') a[q.id] = { ...(a[q.id] || {}), v: c }; else a[q.id] = c; rerender(); });
+  root.querySelectorAll('input[type=checkbox][name]').forEach(el => el.onchange = () => {
+    const q = BY[el.name]; const c = +el.value; const ex = q.exclusive || [];
+    let sel = q.type === 'mcsc' ? ((a[q.id] || {}).sel || []) : (a[q.id] || []);
+    if (el.checked) sel = ex.includes(c) ? [c] : [...sel.filter(x => !ex.includes(x)), c]; else sel = sel.filter(x => x !== c);
+    if (q.type === 'mcsc') { const top = (a[q.id] || {}).top; a[q.id] = { sel, top: sel.includes(top) ? top : (sel.filter(x => x < 90).length === 1 ? sel[0] : undefined) }; } else a[q.id] = sel;
+    rerender();
+  });
+  root.querySelectorAll('[data-top]').forEach(el => el.onclick = () => { const id = el.dataset.top; a[id] = { ...(a[id] || {}), top: +el.dataset.c }; rerender(); });
+  root.querySelectorAll('[data-rank]').forEach(el => el.onclick = () => {
+    const q = BY[el.dataset.rank]; const c = +el.dataset.c; const ex = q.exclusive || [];
+    let o = a[q.id] || [];
+    if (o.includes(c)) o = o.filter(x => x !== c);
+    else if (ex.includes(c) || c === 98) o = [c];
+    else { o = o.filter(x => !(ex.includes(x) || x === 98)); if (o.length < 3) o = [...o, c]; }
+    a[q.id] = o; rerender();
+  });
+  root.querySelectorAll('[data-other]').forEach(el => el.oninput = () => { a[el.dataset.other + '_other'] = el.value; save(); });
+  root.querySelectorAll('[data-scoe]').forEach(el => el.oninput = () => { a[el.dataset.scoe] = { ...(a[el.dataset.scoe] || {}), text: el.value }; save(); });
+  root.querySelectorAll('[data-contact]').forEach(el => el.oninput = () => { a.G5_contact = el.value; save(); });
+  root.querySelectorAll('[data-oe]').forEach(el => el.oninput = () => { a[el.dataset.oe] = el.value; save(); });
+  root.querySelectorAll('[data-num]').forEach(el => el.oninput = () => { const id = el.dataset.num; a[id] = el.value === '' ? undefined : Number(el.value); save(); if (['C1','C7','G1'].includes(id)) {} });
+  root.querySelectorAll('[data-dk]').forEach(el => el.onchange = () => { const q = BY[el.dataset.dk]; a[q.id] = el.checked ? q.dkCode : undefined; rerender(); });
+  root.querySelectorAll('[data-rec]').forEach(el => el.onchange = () => { a[el.dataset.rec + '_rec'] = el.checked; save(); });
+  root.querySelectorAll('[data-gnum]').forEach(el => el.oninput = () => { const id = el.dataset.gnum; const g = { ...(a[id] || {}) }; if (el.value === '') delete g[el.dataset.i]; else g[el.dataset.i] = Number(el.value); a[id] = g; save(); });
+  root.querySelectorAll('[data-gnum]').forEach(el => el.addEventListener('input', () => { const q = BY[el.dataset.gnum]; if (!q.sum100) return; const g = a[q.id] || {}; const t = q.rows.reduce((x, _, i) => x + (isNum(g[i]) && g[i] !== 98 ? g[i] : 0), 0); const out = document.getElementById('sum-' + q.id); if (out) out.textContent = t + '%'; }));
+  root.querySelectorAll('[data-gdk]').forEach(el => el.onchange = () => { const id = el.dataset.gdk; const g = { ...(a[id] || {}) }; if (el.checked) g[el.dataset.i] = 98; else delete g[el.dataset.i]; a[id] = g; rerender(); });
+  root.querySelectorAll('[data-flag]').forEach(el => el.onchange = () => { a[el.dataset.flag + '_fewer'] = el.checked; rerender(); });
+  root.querySelectorAll('[data-seen]').forEach(el => el.oninput = () => { a[el.dataset.seen + '_seen'] = el.value === '' ? undefined : Number(el.value); save(); });
+  root.querySelectorAll('[data-gsc]').forEach(el => el.onclick = () => { const id = el.dataset.gsc; a[id] = { ...(a[id] || {}), [el.dataset.i]: +el.dataset.c }; rerender(); });
+}
+function validate(q, a) {
+  const v = a[q.id];
+  if (q.type === 'oe') return (q.required && q.id !== 'G4' && !String(v || '').trim()) ? 'Please answer this question.' : null;
+  if (q.type === 'sc') { if (!isNum(v)) return 'Please select an option.'; if (q.id === 'G5' && v === 1 && !String(a.G5_contact || '').trim()) return 'Please share an email address or phone number, or select No.'; if (v === 97 && q.options.some(o => o.c === 97) && q.id !== 'A1' && q.id !== 'A2' && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'scoe') return (!v || !isNum(v.v)) ? 'Please select an option.' : null;
+  if (q.type === 'mc') { if (!v || !v.length) return 'Please select at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'mcsc') { if (!v || !(v.sel || []).length) return 'Please select at least one option.'; if (v.sel.filter(x => x < 90).length > 1 && !isNum(v.top)) return 'Please mark the most common reason.'; return null; }
+  if (q.type === 'rank') { if (!v || !v.length) return 'Please choose at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'num') {
+    if (!isNum(v)) return 'Please enter a number' + (q.dkCode ? ' or tick the box.' : '.');
+    if (q.dkCode && v === q.dkCode && (q.max == null || v > q.max)) return null;
+    if (v < (q.min ?? 0) || (q.max != null && v > q.max) || !Number.isInteger(v)) return `Please enter a whole number${q.max != null ? ` from ${q.min ?? 0} to ${q.max}` : ''}.`;
+    if (q.id === 'A5' && v === 0) return null;
+    return null;
+  }
+  if (q.type === 'gridnum') {
+    const g = v || {};
+    for (let i = 0; i < q.rows.length; i++) {
+      const x = g[i];
+      if (!isNum(x)) return 'Please answer every row' + (q.dk ? ' (or tick Don’t know).' : '.');
+      if (x === 98 && q.dk && (q.max == null || q.max < 98)) continue;
+      if (x < 0 || (q.max != null && x > q.max) || !Number.isInteger(x)) return `Row “${q.rows[i]}”: enter a whole number${q.max != null ? ` from 0 to ${q.max}` : ''}.`;
+    }
+    if (q.sum100) { const vals = q.rows.map((_, i) => g[i]); if (!vals.some(x => x === 98)) { const s = vals.reduce((t, x) => t + x, 0); if (s !== 100) return `Shares should add to 100 (currently ${s}).`; } }
+    if (q.flag && a[q.id + '_fewer']) { const seen = a[q.id + '_seen']; if (!isNum(seen) || seen < 1 || seen > 9) return 'Enter how many such women you have seen (1–9).'; if (q.rows.some((_, i) => g[i] > seen)) return 'No row can exceed the number of women seen.'; }
+    return null;
+  }
+  if (q.type === 'gridsc') { const g = v || {}; return q.rows.every((_, i) => isNum(g[i])) ? null : 'Please answer every row.'; }
+  return null;
+}
+async function next() {
+  const a = S.answers; const pages = pagesFor(a); const sec = pages[S.page];
+  const qs = SCH.filter(q => q.sec === sec && visible(q, a));
+  const errors = {}; qs.forEach(q => { const e = validate(q, a); if (e) errors[q.id] = e; });
+  if (Object.keys(errors).length) { renderSurvey(errors); const f = sv.querySelector('.qerr'); if (f) f.closest('.q').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  // clear answers for questions no longer visible
+  SCH.forEach(q => { if (!visible(q, a) && a[q.id] !== undefined && q.sec !== SECS[0]) delete a[q.id]; });
+  const t = terminated(a);
+  if (t) return finish('screened_out', t);
+  if (S.page === pages.length - 1) return finish('complete');
+  S.page++; save(); renderSurvey(); window.scrollTo(0, 0);
+}
+async function finish(status, reason) {
+  const a = S.answers;
+  const doc = {
+    status, reason: reason || null, version: 'v2.0', source: 'web',
+    specialty: specOf(a) || null, inst: a.A2 ?? null, designation: a.A4 ?? null,
+    startedAt: S.startedAt, submittedAt: new Date().toISOString(),
+    durationSec: S.startedAt ? Math.round((Date.now() - Date.parse(S.startedAt)) / 1000) : null,
+    attentionFail: status === 'complete' && a.D4 ? a.D4[8] !== 4 : false,
+    answers: status === 'complete' ? a : { A0: a.A0, A1: a.A1, A2: a.A2, A5: a.A5 }
+  };
+  S.page = 'done'; S.doneKind = status === 'complete' ? 'full' : 'screen';
+  try {
+    addDoc(doc);
+    S.saveOk = true;
+    S.saveMsg = 'Saved in this browser. Export responses from the Data tab before clearing browser storage or changing devices.';
+    S.answers = {};
+    S.startedAt = null;
+  }
+  catch (e) { S.saveOk = false; S.saveMsg = 'Saving failed in this browser. Your answers are kept as a draft on this device.'; }
+  save(); renderSurvey();
+}
+
+/* ---------------- dashboard ---------------- */
+const dv = document.getElementById('view-dash');
+const F = Object.assign({ spec: 'all', inst: 'all', attn: true, sim: false }, store.get('sem_filters') || {});
+const GRADED = ['Strong','Strong','Strong','Strong','Weak','Weak'];
+const SEQ = ['var(--s100)','var(--s200)','var(--s300)','var(--s400)','var(--s500)','var(--s600)','var(--s700)'];
+function docsAll() { return F.sim ? simDocs() : realDocs; }
+function filtered(ignoreSpec) {
+  return docsAll().filter(d => d.status === 'complete'
+    && (ignoreSpec || F.spec === 'all' || d.specialty === F.spec)
+    && (F.inst === 'all' || String(d.inst) === F.inst)
+    && (!F.attn || !d.attentionFail));
+}
+const pct = (x, n) => n ? Math.round(100 * x / n) : 0;
+const median = arr => { if (!arr.length) return null; const s = [...arr].sort((p, q) => p - q); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const mean = arr => arr.length ? arr.reduce((t, x) => t + x, 0) / arr.length : null;
+const quant = (arr, p) => { if (!arr.length) return null; const s = [...arr].sort((a, b) => a - b); const i = (s.length - 1) * p; const lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); };
+const fmt = (x, d = 1) => x == null ? '–' : (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('en-IN');
+const ans = (d, id) => (d.answers || {})[id];
+function barsHTML(items, opts = {}) {
+  const max = opts.max ?? Math.max(1, ...items.map(i => i.v));
+  return `<div class="bars">${items.map(i => `<div class="bar" data-tip="${esc(i.tip || (i.label + ': ' + i.disp))}"><span class="lab">${esc(i.label)}</span><span class="track"><span class="fill" style="width:${Math.max(0, 100 * i.v / max)}%;${i.color ? 'background:' + i.color : ''}"></span></span><span class="val">${esc(i.disp)}</span></div>`).join('')}</div>`;
+}
+function cardHTML(q, inner, n, note) {
+  return `<div class="card"><div class="ctitle"><span class="qid">${q ? q.id + ' · ' : ''}${note ? esc(note) : ''}</span><h3>${esc(q ? q.text : '')}</h3><span class="n">n = ${n}</span></div>${n ? inner : '<div class="empty">No answers yet</div>'}</div>`;
+}
+function genericCard(q, docs) {
+  const base = docs.filter(d => ans(d, q.id) !== undefined);
+  const n = base.length;
+  let inner = '';
+  if (q.type === 'sc' || q.type === 'scoe') {
+    const get = d => q.type === 'scoe' ? (ans(d, q.id) || {}).v : ans(d, q.id);
+    inner = barsHTML(q.options.map(o => { const c = base.filter(d => get(d) === o.c).length; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: ${c} of ${n} (${pct(c, n)}%)` }; }), { max: 100 });
+    if (q.type === 'scoe') { const t = base.map(d => (ans(d, q.id) || {}).text).filter(Boolean); if (t.length) inner += `<div class="quotes" style="margin-top:10px">${t.slice(-15).map(x => `<div>${esc(x)}</div>`).join('')}</div>`; }
+  } else if (q.type === 'mc' || q.type === 'mcsc') {
+    const get = d => q.type === 'mcsc' ? (ans(d, q.id) || {}).sel || [] : ans(d, q.id) || [];
+    const items = q.options.map(o => { const c = base.filter(d => get(d).includes(o.c)).length; const top = q.type === 'mcsc' ? base.filter(d => (ans(d, q.id) || {}).top === o.c || (get(d).filter(x => x < 90).length === 1 && get(d)[0] === o.c)).length : null; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: selected by ${c} of ${n}` + (top != null ? `; most common for ${top}` : '') }; });
+    inner = barsHTML(items.sort((x, y) => y.v - x.v), { max: 100 }) + '<div class="legend">% of respondents selecting; multiple answers allowed</div>';
+  } else if (q.type === 'rank') {
+    const items = q.options.map(o => { let score = 0, first = 0; base.forEach(d => { const r = ans(d, q.id) || []; const i = r.indexOf(o.c); if (i >= 0 && o.c < 90) { score += 3 - i; if (i === 0) first++; } else if (i >= 0) score += 0; }); const sel = base.filter(d => (ans(d, q.id) || []).includes(o.c)).length; return { label: o.t, v: o.c >= 90 ? pct(sel, n) / 33 : score / n, disp: o.c >= 90 ? pct(sel, n) + '%' : fmt(score / n, 2), tip: o.c >= 90 ? `${o.t}: ${sel} of ${n}` : `${o.t}: score ${fmt(score / n, 2)} (3 pts for rank 1, 2 for rank 2, 1 for rank 3); ranked first by ${first}` }; });
+    inner = barsHTML(items.filter(i => !/^(Nothing|I have not|Don)/.test(i.label)).sort((x, y) => y.v - x.v), { max: 3 }) + '<div class="legend">Mean rank score per respondent (0–3)</div>';
+  } else if (q.type === 'num') {
+    const vals = base.map(d => ans(d, q.id)).filter(v => isNum(v) && !(q.dkCode && v === q.dkCode && (q.max == null || v > q.max)));
+    const dk = n - vals.length;
+    const bySpec = ['G','E','D','C'].filter(s => q.spec.includes(s)).map(s => { const vv = base.filter(d => d.specialty === s).map(d => ans(d, q.id)).filter(v => isNum(v) && !(q.dkCode && v === q.dkCode && (q.max == null || v > q.max))); return `<tr><td>${SPEC_NAME[s]}</td><td class="r">${vv.length}</td><td class="r">${fmt(mean(vv))}</td><td class="r">${fmt(median(vv))}</td></tr>`; }).join('');
+    inner = `<div class="kpis"><div class="kpi"><b>${fmt(median(vals))}</b><span>Median</span></div><div class="kpi"><b>${fmt(mean(vals))}</b><span>Mean</span></div><div class="kpi"><b>${fmt(quant(vals, .25))}–${fmt(quant(vals, .75))}</b><span>Middle 50%</span></div></div><p class="n" style="margin-top:8px">${q.dkCode ? `${dk} answered “${esc(q.dkLabel)}”` : ''}${q.recFlag ? ` · ${base.filter(d => ans(d, q.id + '_rec')).length} from records` : ''}</p><div class="tbl" style="margin-top:8px"><table><tr><th>Specialty</th><th>n</th><th>Mean</th><th>Median</th></tr>${bySpec}</table></div>`;
+  } else if (q.type === 'gridnum') {
+    const items = q.rows.map((r, i) => { const vv = base.map(d => (ans(d, q.id) || {})[i]).filter(v => isNum(v) && !(v === 98 && (q.max == null || q.max < 98))); const m = mean(vv); return { label: r, v: m || 0, disp: fmt(m), tip: `${r}: mean ${fmt(m)}, median ${fmt(median(vv))} (n = ${vv.length})` }; });
+    inner = barsHTML(items, { max: q.max || Math.max(1, ...items.map(i => i.v)) }) + `<div class="legend">Mean per respondent${q.max === 100 ? ' (%)' : q.max === 10 ? ' (out of 10)' : ''}</div>`;
+  } else if (q.type === 'gridsc') {
+    const cols = q.cols; const shades = colShades(cols, q.asc);
+    inner = `<div class="bars">${q.rows.map((r, i) => { const rb = base.filter(d => isNum((ans(d, q.id) || {})[i])); const m = rb.length; const est = q.mid ? mean(rb.map(d => q.mid[ans(d, q.id)[i] - 1]).filter(isNum)) : null; return `<div class="bar" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1.3fr)${q.mid ? ' 52px' : ''}"><span class="lab">${esc(r)}</span><span class="stack100">${cols.map((c, k) => { const cnt = rb.filter(d => ans(d, q.id)[i] === c.c).length; return cnt ? `<i style="width:${100 * cnt / m}%;background:${shades[k]}" data-tip="${esc(`${r} · ${c.t}: ${cnt} of ${m} (${pct(cnt, m)}%)`)}"></i>` : ''; }).join('')}</span>${q.mid ? `<span class="val" data-tip="Estimated average share from range midpoints">~${fmt(est, 0)}%</span>` : ''}</div>`; }).join('')}</div><div class="legend">${cols.map((c, k) => `<span><i style="background:${shades[k]}"></i>${esc(c.t)}</span>`).join('')}${q.mid ? '<span>~ = estimated average share, from range midpoints</span>' : ''}</div>`;
+  } else if (q.type === 'oe') {
+    const t = base.map(d => ans(d, q.id)).filter(x => String(x || '').trim());
+    inner = t.length ? `<div class="quotes">${t.slice(-25).reverse().map(x => `<div>${esc(x)}</div>`).join('')}</div>` : '<div class="empty">No comments yet</div>';
+  }
+  return cardHTML(q, inner, n);
+}
+function colShades(cols, asc) {
+  const real = cols.filter(c => c.c < 90); const out = [];
+  const steps = real.length <= 1 ? ['var(--s500)'] : real.map((_, k) => SEQ[Math.round((SEQ.length - 1) * (asc ? k / (real.length - 1) : 1 - k / (real.length - 1)))]);
+  let j = 0; cols.forEach(c => out.push(c.c >= 90 ? 'var(--dk)' : steps[j++]));
+  return out;
+}
+function heatColor(v) { const i = Math.min(SEQ.length - 1, Math.floor(v / (100 / SEQ.length))); return { bg: SEQ[i], ink: i >= 4 ? '#ffffff' : '#0b0b0b' }; }
+
+function renderDash() {
+  const all = docsAll();
+  const docs = filtered(false);
+  const docsNoSpec = filtered(true);
+  const completes = all.filter(d => d.status === 'complete');
+  const screened = all.filter(d => d.status === 'screened_out');
+  const attnFails = completes.filter(d => d.attentionFail).length;
+  const targets = store.get('sem_targets') || { G: 25, E: 25, D: 25, C: 25 };
+  const durs = completes.map(d => d.durationSec).filter(isNum).map(x => x / 60);
+  const last = completes.map(d => d.submittedAt).filter(Boolean).sort().pop();
+  // days
+  const days = []; for (let k = 13; k >= 0; k--) { const dt = new Date(Date.now() - k * 864e5); days.push(dt.toISOString().slice(0, 10)); }
+  const perDay = days.map(day => completes.filter(d => (d.submittedAt || '').slice(0, 10) === day).length);
+  const maxDay = Math.max(1, ...perDay);
+
+  const h = [];
+  h.push(`<div class="filters" role="group" aria-label="Filters">
+    <label>Specialty <select id="fSpec"><option value="all">All</option>${Object.entries(SPEC_NAME).map(([k, v]) => `<option value="${k}" ${F.spec === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label>Institution <select id="fInst"><option value="all">All</option>${Object.entries(INST).map(([k, v]) => `<option value="${k}" ${F.inst === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label><input type="checkbox" id="fAttn" ${F.attn ? 'checked' : ''}> Exclude failed attention check</label>
+    <label><input type="checkbox" id="fSim" ${F.sim ? 'checked' : ''}> Simulated preview</label>
+    <span style="margin-left:auto">${F.sim ? '<span class="sim">Simulated preview</span>' : '<span class="n">Local browser data</span>'}</span></div>`);
+  if (F.sim) h.push(`<div class="banner warn" style="margin-top:12px"><b>Simulated data.</b> These 80 responses are randomly generated to preview the analysis. They are not stored and are not real answers. Untick “Simulated preview” to see live responses.</div>`);
+
+  h.push(`<div class="dsec" id="sec-field"><header><h2>Fieldwork</h2><p class="muted">Progress against quota and data quality. Quota targets can be edited on the Data tab.</p></header>
+    <div class="kpis">
+      <div class="kpi"><b>${completes.length}</b><span>Completed responses</span></div>
+      <div class="kpi"><b>${screened.length}</b><span>Screened out</span></div>
+      <div class="kpi"><b>${fmt(median(durs))}</b><span>Median minutes to complete</span></div>
+      <div class="kpi"><b>${attnFails}</b><span>Failed attention check${completes.length ? ` (${pct(attnFails, completes.length)}%)` : ''}</span></div>
+      <div class="kpi"><b style="font-size:18px">${last ? new Date(last).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '–'}</b><span>Latest response</span></div>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="ctitle"><h3>Completes by specialty against target</h3><span class="n">n = ${completes.length}</span></div>${barsHTML(['G','E','D','C'].map(s => { const c = completes.filter(d => d.specialty === s).length; return { label: SPEC_NAME[s], v: Math.min(100, pct(c, targets[s])), disp: `${c}/${targets[s]}`, tip: `${SPEC_NAME[s]}: ${c} of target ${targets[s]}` }; }), { max: 100 })}</div>
+      <div class="card"><div class="ctitle"><h3>Completes by institution type</h3><span class="n">n = ${completes.length}</span></div>${barsHTML(Object.entries(INST).map(([k, v]) => { const c = completes.filter(d => String(d.inst) === k).length; return { label: v, v: c, disp: String(c) }; }))}</div>
+      <div class="card"><div class="ctitle"><h3>Completes per day, last 14 days</h3><span class="n">n = ${perDay.reduce((a, b) => a + b, 0)}</span></div>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:110px;padding-top:6px">${perDay.map((c, i) => `<div data-tip="${days[i]}: ${c}" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:${100 * c / maxDay}%;min-height:${c ? 3 : 1}px;background:${c ? 'var(--s500)' : 'var(--rule)'};border-radius:4px 4px 0 0"></div></div>`).join('')}</div>
+        <div class="row n" style="justify-content:space-between;margin-top:4px"><span>${days[0].slice(5)}</span><span>${days[13].slice(5)}</span></div></div>
+    </div></div>`);
+
+  // Core heatmap
+  const C3 = BY.C3;
+  const cols = [['all', 'All'], ['G', 'Gynae'], ['E', 'Endo'], ['D', 'Diab'], ['C', 'Cardio']];
+  const hm = C3.rows.map((r, i) => `<tr><td class="rl">${esc(r)}</td>${cols.map(([s, lab]) => {
+    const base = docsNoSpec.filter(d => (s === 'all' || d.specialty === s) && isNum((ans(d, 'C3') || {})[i]) && ans(d, 'C3')[i] !== 5);
+    const m = base.length; if (!m) return `<td style="background:var(--surface);color:var(--faint)" data-tip="${esc(lab + ': no respondents see these patients yet')}">–</td>`;
+    const cnt = k => base.filter(d => ans(d, 'C3')[i] === k).length;
+    const use = cnt(1) + cnt(2); const v = pct(use, m); const c = heatColor(v);
+    return `<td style="background:${c.bg};color:${c.ink}" data-tip="${esc(`${r} · ${lab} (n = ${m}): routinely ${cnt(1)}, selectively ${cnt(2)}, refer ${cnt(3)}, do not use ${cnt(4)}`)}">${v}%</td>`;
+  }).join('')}</tr>`).join('');
+  const c4 = BY.C4;
+  h.push(`<div class="dsec" id="sec-core"><header><h2>Semaglutide use by patient type</h2><p class="muted">Share of specialists who start semaglutide (routinely or in selected patients), among those who see each patient type. Institution and attention filters apply; specialty columns ignore the specialty filter.</p></header>
+    <div class="card"><div class="ctitle"><span class="qid">C3 · core</span><h3>Where specialists start semaglutide</h3><span class="n">n = ${docsNoSpec.filter(d => ans(d, 'C3')).length}</span></div>
+    <div class="hm"><table><tr><th class="rl">Patient type</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${hm}</table></div>
+    <div class="legend">${[0, 15, 29, 43, 58, 72, 86].map((v, k) => `<span><i style="background:${SEQ[k]}"></i>${v}${k === 6 ? '–100' : '–' + ([14, 28, 42, 57, 71, 85][k])}%</span>`).join('')}<span><i style="background:var(--surface);border:1px solid var(--rule)"></i>No data</span></div></div>
+    <div class="cards">${genericCard(BY.C2, docs)}${genericCard(c4, docs)}</div>
+    <div class="card"><div class="ctitle"><span class="qid">D12 vs C3</span><h3>Preference for rDNA-derived semaglutide compared with use, by patient type</h3><span class="n">n = ${docs.filter(d => ans(d, 'D12')).length}</span></div>
+    <div class="tbl"><table><tr><th>Patient type</th><th>Start semaglutide (C3)</th><th>Prefer rDNA-derived (D12)</th></tr>${C3.rows.map((r, i) => { const b3 = docs.filter(d => isNum((ans(d, 'C3') || {})[i]) && ans(d, 'C3')[i] !== 5); const u = pct(b3.filter(d => [1, 2].includes(ans(d, 'C3')[i])).length, b3.length); const b12 = docs.filter(d => ans(d, 'D12')); const p = pct(b12.filter(d => ans(d, 'D12').includes(i + 1)).length, b12.length); return `<tr><td>${esc(r)}</td><td>${miniBar(u, 'var(--s500)')}</td><td>${miniBar(p, '#eb6834')}</td></tr>`; }).join('')}</table></div>
+    <div class="legend"><span><i style="background:var(--s500)"></i>% starting semaglutide (of those who see the patient type)</span><span><i style="background:#eb6834"></i>% preferring rDNA-derived product (of all D12 respondents)</span></div></div>
+  </div>`);
+
+  // Evidence
+  const C5 = BY.C5; const shades = colShades(C5.cols, false);
+  const b5 = docs.filter(d => ans(d, 'C5'));
+  h.push(`<div class="dsec" id="sec-evidence"><header><h2>Evidence perception against graded evidence</h2><p class="muted">Graded evidence is taken from the evidence review of 16 September 2026. Concordance is the share whose rating matches the grade.</p></header>
+    <div class="card"><div class="ctitle"><span class="qid">C5</span><h3>${esc(C5.text)}</h3><span class="n">n = ${b5.length}</span></div>
+    ${b5.length ? `<div class="bars">${C5.rows.map((r, i) => { const rb = b5.filter(d => isNum(ans(d, 'C5')[i])); const m = rb.length; const g = GRADED[i]; const gc = C5.cols.find(c => c.t === g).c; const conc = pct(rb.filter(d => ans(d, 'C5')[i] === gc).length, m); return `<div class="bar ev"><span class="lab">${esc(r)}</span><span class="stack100">${C5.cols.map((c, k) => { const cnt = rb.filter(d => ans(d, 'C5')[i] === c.c).length; return cnt ? `<i style="width:${100 * cnt / m}%;background:${shades[k]}" data-tip="${esc(`${c.t}: ${cnt} of ${m}`)}"></i>` : ''; }).join('')}</span><span class="val" data-tip="Graded ${g}; ${conc}% of respondents agree">${g} · ${conc}% agree</span></div>`; }).join('')}</div><div class="legend">${C5.cols.map((c, k) => `<span><i style="background:${shades[k]}"></i>${esc(c.t)}</span>`).join('')}</div>` : '<div class="empty">No answers yet</div>'}</div>
+    <div class="cards">${genericCard(BY.C6, docs)}${genericCard(BY.C7, docs)}${genericCard(BY.C8, docs)}</div></div>`);
+
+  // Products
+  const D6 = BY.D6; const b6 = docs.filter(d => ans(d, 'D6'));
+  const correct = [1, 2];
+  h.push(`<div class="dsec" id="sec-products"><header><h2>Original (rDNA) and synthetic products</h2><p class="muted">Choice drivers were asked before manufacturing process was mentioned. Knowledge accuracy is scored against the EMA EPAR (Novo Nordisk: rDNA) and CDSCO SEC minutes (Indian generics: “Synthetic Origin”).</p></header>
+    <div class="cards">${genericCard(BY.D1, docs)}${driversCard(docs)}
+    <div class="card"><div class="ctitle"><span class="qid">D5–D6</span><h3>Awareness and accuracy on manufacturing process</h3><span class="n">n = ${docs.filter(d => isNum(ans(d, 'D5'))).length}</span></div>
+      ${barsHTML([{ label: 'Aware (in detail or in general)', v: pct(docs.filter(d => [1, 2].includes(ans(d, 'D5'))).length, docs.filter(d => isNum(ans(d, 'D5'))).length), disp: pct(docs.filter(d => [1, 2].includes(ans(d, 'D5'))).length, docs.filter(d => isNum(ans(d, 'D5'))).length) + '%' },
+        ...D6.rows.map((r, i) => { const m = b6.filter(d => isNum(ans(d, 'D6')[i])).length; const c = b6.filter(d => ans(d, 'D6')[i] === correct[i]).length; return { label: 'Correct: ' + r, v: pct(c, m), disp: pct(c, m) + '%', tip: `${r}: ${c} of ${m} answered ${D6.cols.find(x => x.c === correct[i]).t}` }; })], { max: 100 })}
+      <div class="legend">Accuracy base: respondents aware of different processes (D5 = 1 or 2)</div></div>
+    ${genericCard(BY.D7, docs)}${genericCard(BY.D8, docs)}${genericCard(BY.D9, docs)}${genericCard(BY.D10, docs)}${genericCard(BY.D11, docs)}${genericCard(BY.D2, docs)}${genericCard(BY.D3, docs)}</div></div>`);
+
+  // Women cohort
+  const e13 = docs.filter(d => isNum(ans(d, 'E13')));
+  h.push(`<div class="dsec" id="sec-women"><header><h2>Women with obesity and gynaecological conditions</h2><p class="muted">Gynaecology, endocrinology and diabetology respondents. Label concordance for pre-conception stopping counts “about 2 months”, “more than 2 months” and “do not use in women planning pregnancy”.</p></header>
+    <div class="kpis">
+      <div class="kpi"><b>${fmt(median(docs.map(d => ans(d, 'E8')).filter(v => isNum(v) && v !== 98)), 0)}</b><span>Median days to first endocrinology appointment (E8)</span></div>
+      <div class="kpi"><b>${fmt(mean(docs.map(d => ans(d, 'E9')).filter(v => isNum(v) && v <= 10)))}</b><span>Known to attend, of last 10 referred (E9)</span></div>
+      <div class="kpi"><b>${pct(docs.filter(d => ans(d, 'E9') === 96).length, docs.filter(d => isNum(ans(d, 'E9'))).length)}%</b><span>Do not know referral outcome (E9)</span></div>
+      <div class="kpi"><b>${pct(e13.filter(d => [3, 4, 7].includes(ans(d, 'E13'))).length, e13.length)}%</b><span>Label-concordant pre-conception advice (E13)</span></div>
+    </div>
+    <div class="cards">${['E1','E2','E3','E6','E4','E11','E7','E12','E13','E14','E10','E5'].map(id => genericCard(BY[id], docs)).join('')}</div></div>`);
+
+  // Specialty
+  h.push(`<div class="dsec" id="sec-spec"><header><h2>Specialty modules</h2><p class="muted">Endocrinology and diabetology (F1–F3); cardiology (F4–F7).</p></header>
+    <div class="cards">${['F1','F2','F3','F4','F5','F6','F7'].map(id => genericCard(BY[id], docs)).join('')}</div></div>`);
+
+  // Feasibility
+  const g2 = docs.map(d => ans(d, 'G2')).filter(v => isNum(v) && v !== 98);
+  h.push(`<div class="dsec" id="sec-feas"><header><h2>Research feasibility</h2></header>
+    <div class="kpis"><div class="kpi"><b>${pct(docs.filter(d => [1, 2].includes(ans(d, 'G1'))).length, docs.filter(d => isNum(ans(d, 'G1'))).length)}%</b><span>Would or might take part (G1)</span></div><div class="kpi"><b>${g2.reduce((a, b) => a + b, 0).toLocaleString('en-IN')}</b><span>Patients starting semaglutide per month, summed across interested sites (G2)</span></div></div>
+    <div class="cards">${['G1','G3','G4'].map(id => genericCard(BY[id], docs)).join('')}</div></div>`);
+
+  // All questions
+  h.push(`<div class="dsec" id="sec-all"><header><h2>Every question</h2><p class="muted">Ready-made analysis for all ${SCH.length} questions, grouped by survey section.</p></header>
+    ${SECS.map(sec => `<details class="all"><summary>${esc(sec)}</summary><div class="cards">${SCH.filter(q => q.sec === sec && q.id !== 'A3').map(q => genericCard(q, docs)).join('')}</div></details>`).join('')}</div>`);
+
+  // AI
+  h.push(`<div class="dsec" id="sec-ai"><header><h2>Written analysis</h2><p class="muted">Creates a deterministic findings brief from the aggregated numbers currently on screen. It uses counts and percentages only, not individual records.</p></header>
+    <div class="card stack"><div class="row"><button class="btn primary" id="aiBtn">Draft analysis from current data</button></div><div id="aiOut" class="ai muted">${AI_TEXT ? esc(AI_TEXT) : 'No analysis drafted yet.'}</div></div></div>`);
+
+  dv.innerHTML = h.join('');
+  dv.querySelector('#fSpec').onchange = e => { F.spec = e.target.value; store.set('sem_filters', F); renderDash(); };
+  dv.querySelector('#fInst').onchange = e => { F.inst = e.target.value; store.set('sem_filters', F); renderDash(); };
+  dv.querySelector('#fAttn').onchange = e => { F.attn = e.target.checked; store.set('sem_filters', F); renderDash(); };
+  dv.querySelector('#fSim').onchange = e => { F.sim = e.target.checked; store.set('sem_filters', F); renderDash(); };
+  const ab = dv.querySelector('#aiBtn'); if (ab) ab.onclick = runAI;
+}
+function miniBar(v, color) { return `<span style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center" data-tip="${v}%"><span class="track"><span class="fill" style="width:${v}%;background:${color}"></span></span><span class="val">${v}%</span></span>`; }
+function driversCard(docs) {
+  const q = BY.D4; const base = docs.filter(d => ans(d, 'D4'));
+  const items = q.rows.map((r, i) => ({ r, i })).filter(x => x.i !== 8).map(({ r, i }) => { const vals = base.map(d => ans(d, 'D4')[i]).filter(isNum).map(c => 5 - c); const m = mean(vals); return { label: r, v: m || 0, disp: fmt(m, 2), tip: `${r}: mean ${fmt(m, 2)} on 1–4 (n = ${vals.length}); ${pct(vals.filter(x => x === 4).length, vals.length)}% very important` }; }).sort((a, b) => b.v - a.v);
+  return cardHTML(q, barsHTML(items, { max: 4 }) + '<div class="legend">Mean importance: 4 = very important, 1 = not important. Attention-check row excluded.</div>', base.length);
+}
+
+/* ---------------- AI analysis ---------------- */
+let AI_TEXT = '';
+function aggregateForAI() {
+  const docs = filtered(false); const out = { filters: { ...F, sim: undefined }, simulated: F.sim, completes: docs.length, bySpecialty: Object.fromEntries(['G','E','D','C'].map(s => [SPEC_NAME[s], docs.filter(d => d.specialty === s).length])), questions: {} };
+  SCH.forEach(q => {
+    if (['A0','A3','G4'].includes(q.id)) return;
+    const base = docs.filter(d => ans(d, q.id) !== undefined); const n = base.length; if (!n) return;
+    let s = { q: q.text, n };
+    if (q.type === 'sc' || q.type === 'scoe') s.pct = Object.fromEntries(q.options.map(o => [o.t, pct(base.filter(d => (q.type === 'scoe' ? ans(d, q.id).v : ans(d, q.id)) === o.c).length, n)]));
+    else if (q.type === 'mc' || q.type === 'mcsc') s.pctSelected = Object.fromEntries(q.options.map(o => [o.t, pct(base.filter(d => (q.type === 'mcsc' ? ans(d, q.id).sel : ans(d, q.id)).includes(o.c)).length, n)]));
+    else if (q.type === 'rank') s.meanScore = Object.fromEntries(q.options.filter(o => o.c < 90).map(o => [o.t, +fmt(base.reduce((t, d) => { const i = ans(d, q.id).indexOf(o.c); return t + (i >= 0 ? 3 - i : 0); }, 0) / n, 2)]));
+    else if (q.type === 'num') { const v = base.map(d => ans(d, q.id)).filter(x => isNum(x) && !(q.dkCode && x === q.dkCode && (q.max == null || x > q.max))); s.median = median(v); s.mean = +fmt(mean(v)); s.dontKnow = n - v.length; }
+    else if (q.type === 'gridnum') s.rowMeans = Object.fromEntries(q.rows.map((r, i) => [r, +fmt(mean(base.map(d => ans(d, q.id)[i]).filter(x => isNum(x) && !(x === 98 && (q.max == null || q.max < 98)))))]));
+    else if (q.type === 'gridsc') s.rowPct = Object.fromEntries(q.rows.map((r, i) => [r, Object.fromEntries(q.cols.map(c => [c.t, pct(base.filter(d => ans(d, q.id)[i] === c.c).length, base.filter(d => isNum(ans(d, q.id)[i])).length)]))]));
+    out.questions[q.id] = s;
+  });
+  out.gradedEvidenceForC5 = Object.fromEntries(BY.C5.rows.map((r, i) => [r, GRADED[i]]));
+  out.useBySpecialtyC3 = Object.fromEntries(['G','E','D','C'].map(s => [SPEC_NAME[s], Object.fromEntries(BY.C3.rows.map((r, i) => { const b = docs.filter(d => d.specialty === s && isNum((ans(d, 'C3') || {})[i]) && ans(d, 'C3')[i] !== 5); return [r, { n: b.length, pctStart: pct(b.filter(d => [1, 2].includes(ans(d, 'C3')[i])).length, b.length) }]; }))]));
+  return out;
+}
+async function runAI() {
+  const outEl = dv.querySelector('#aiOut'); const btn = dv.querySelector('#aiBtn');
+  btn.disabled = true; outEl.classList.remove('muted'); outEl.textContent = 'Drafting...';
+  const data = aggregateForAI();
+  AI_TEXT = draftBrief(data);
+  outEl.textContent = AI_TEXT;
+  btn.disabled = false;
+}
+function topPct(obj, limit = 3) {
+  return Object.entries(obj || {}).sort((a, b) => b[1] - a[1]).slice(0, limit).map(([k, v]) => `${k}: ${v}%`);
+}
+function draftBrief(data) {
+  const q = data.questions;
+  const lines = [];
+  if (data.simulated) lines.push('SIMULATED PREVIEW. These findings use generated preview records, not real respondent data.');
+  lines.push(`Sample and data quality\nComplete responses in the current filter: n = ${data.completes}. Specialty mix: ${Object.entries(data.bySpecialty).map(([k, v]) => `${k} ${v}`).join(', ')}.`);
+  const c3 = q.C3 && q.C3.rowPct ? Object.entries(q.C3.rowPct).map(([k, v]) => `${k}: ${(v['I start it routinely'] || 0) + (v['I start it in selected patients'] || 0)}% start routinely or selectively`) : [];
+  if (c3.length) lines.push(`Semaglutide use by patient type\nHighest-starting patient types in C3 were ${c3.sort((a, b) => Number(b.match(/: (\\d+)/)?.[1] || 0) - Number(a.match(/: (\\d+)/)?.[1] || 0)).slice(0, 4).join('; ')}.`);
+  if (q.C5 && q.C5.rowPct) lines.push(`Evidence perception versus graded evidence\nC5 perception is available for n = ${q.C5.n}. Review the heat bars for alignment against the graded evidence labels shown in the dashboard.`);
+  if (q.D1 && q.D1.pct) lines.push(`Product choice and rDNA versus synthetic\nBrand consideration drivers in D1: ${topPct(q.D1.pct).join('; ')}. rDNA preference by patient type is shown in the D12 comparison table.`);
+  if (q.E7 && q.E7.pct) lines.push(`Women with obesity and gynaecological conditions\nReferral pathway status in E7: ${topPct(q.E7.pct).join('; ')}. Pre-conception stopping advice is summarized in the E13 KPI.`);
+  if (q.G1 && q.G1.pct) lines.push(`Research feasibility\nInterest in an observational study in G1: ${topPct(q.G1.pct).join('; ')}. Follow-up interviews should probe high-ranking evidence gaps and pathway drop-off reasons.`);
+  return lines.join('\n\n');
+}
+
+/* ---------------- simulated data ---------------- */
+let SIM = null;
+function simDocs() {
+  if (SIM) return SIM;
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = arr => arr[Math.floor(rnd() * arr.length)];
+  const out = [];
+  for (let k = 0; k < 80; k++) {
+    const specCode = pick([1, 2, 3, 3, 4, 4, 5, 5]); const s = SPEC[specCode];
+    const a = { A0: 1, A1: specCode, A2: pick([1, 1, 2, 3, 3, 4, 5]), A4: pick([1, 2, 3, 4, 5, 6]), A5: 2 + Math.floor(rnd() * 5) };
+    const tilt = { G: [10, 20, 15, 30, 40, 5, 20, 20, 5, 5, 45, 5], E: [60, 70, 55, 65, 50, 35, 55, 50, 30, 25, 45, 35], D: [70, 70, 60, 55, 45, 30, 50, 45, 25, 20, 35, 20], C: [30, 65, 40, 25, 60, 55, 25, 20, 20, 10, 10, 5] }[s];
+    SCH.forEach(q => {
+      if (q.sec === SECS[0] || !visible(q, a)) return;
+      if (q.type === 'sc') a[q.id] = pick(q.options.filter(o => o.c !== 97)).c;
+      else if (q.type === 'scoe') a[q.id] = { v: rnd() < .35 ? 1 : 2, text: rnd() < .35 ? pick(['Heard of batch recall of a generic pen in July', 'Colleague mentioned impurity issue', 'Press report']) : '' };
+      else if (q.type === 'mc') { const o = q.options.filter(x => x.c < 90); a[q.id] = o.filter(() => rnd() < .3).map(x => x.c); if (!a[q.id].length) a[q.id] = [pick(o).c]; if (q.id === 'D12') a[q.id] = o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c).concat([]).slice(0, 5).length ? o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c) : [95]; }
+      else if (q.type === 'mcsc') { const o = q.options.filter(x => x.c < 90); const sel = o.filter(() => rnd() < .35).map(x => x.c); a[q.id] = { sel: sel.length ? sel : [1], top: sel[0] || 1 }; }
+      else if (q.type === 'rank') { const o = q.options.filter(x => x.c < 90).map(x => x.c).sort(() => rnd() - .5); a[q.id] = o.slice(0, 3); }
+      else if (q.type === 'num') { const hi = q.max ?? 60; a[q.id] = rnd() < .12 && q.dkCode ? q.dkCode : Math.round(rnd() * Math.min(hi, q.id === 'B1' ? 180 : q.id === 'E8' ? 45 : q.id === 'G2' ? 30 : hi)); if (q.id === 'C7') a[q.id] = Math.round(rnd() * 4); }
+      else if (q.type === 'gridnum') { const g = {}; q.rows.forEach((_, i) => g[i] = Math.round(rnd() * Math.min(q.max ?? 12, q.max === 100 ? 45 : 10))); if (q.sum100) { const x = Math.round(rnd() * 70); g[0] = x; g[1] = 100 - x - 10; g[2] = 10; } if (q.id === 'C2') { g[0] = Math.round(rnd() * 8); } a[q.id] = g; }
+      else if (q.type === 'gridsc') { const g = {}; q.rows.forEach((_, i) => { if (q.id === 'C3') { const r = rnd() * 100; g[i] = r < tilt[i] * .5 ? 1 : r < tilt[i] ? 2 : r < tilt[i] + 20 ? 3 : r < 92 ? 4 : 5; } else if (q.id === 'D4') g[i] = i === 8 ? (rnd() < .95 ? 4 : 2) : pick([1, 1, 2, 2, 3, 4]); else if (q.id === 'D6') g[i] = i === 0 ? pick([1, 1, 1, 3, 98]) : pick([2, 2, 3, 1, 98]); else g[i] = pick(q.cols).c; }); a[q.id] = g; }
+      else if (q.type === 'oe') a[q.id] = rnd() < .3 ? pick(['Joint clinic runs only once a month', 'Patients prefer private endocrinologists for faster access', 'Cost remains the main barrier for our patients']) : '';
+    });
+    const t = Date.now() - rnd() * 13 * 864e5;
+    out.push({ _id: 'sim' + k, status: 'complete', version: 'v2.0', source: 'simulated', specialty: s, inst: a.A2, designation: a.A4, submittedAt: new Date(t).toISOString(), durationSec: 700 + Math.round(rnd() * 700), attentionFail: a.D4 ? a.D4[8] !== 4 : false, answers: a });
+  }
+  for (let k = 0; k < 9; k++) out.push({ _id: 'simx' + k, status: 'screened_out', source: 'simulated', answers: {} });
+  return SIM = out;
+}
+
+/* ---------------- data tab ---------------- */
+const dataV = document.getElementById('view-data');
+function columns() {
+  const cols = ['response_id','status','reason','source','version','specialty','inst','designation','startedAt','submittedAt','durationSec','attentionFail'];
+  SCH.forEach(q => {
+    if (q.type === 'gridnum' || q.type === 'gridsc') { q.rows.forEach((_, i) => cols.push(`${q.id}_r${i + 1}`)); if (q.flag) cols.push(q.id + '_fewer', q.id + '_seen'); }
+    else if (q.type === 'scoe') cols.push(q.id, q.id + '_text');
+    else if (q.type === 'mcsc') cols.push(q.id, q.id + '_top');
+    else { cols.push(q.id); if (q.recFlag) cols.push(q.id + '_rec'); }
+    if (q.options && q.options.some(o => o.c === 97)) cols.push(q.id + '_other');
+  });
+  cols.push('G5_contact');
+  return cols;
+}
+function flatten(d) {
+  const a = d.answers || {}; const r = { response_id: d._id, status: d.status, reason: d.reason, source: d.source, version: d.version, specialty: d.specialty, inst: d.inst, designation: d.designation, startedAt: d.startedAt, submittedAt: d.submittedAt, durationSec: d.durationSec, attentionFail: d.attentionFail };
+  SCH.forEach(q => {
+    const v = a[q.id];
+    if (q.type === 'gridnum' || q.type === 'gridsc') { q.rows.forEach((_, i) => r[`${q.id}_r${i + 1}`] = v ? v[i] : ''); if (q.flag) { r[q.id + '_fewer'] = a[q.id + '_fewer'] ? 1 : ''; r[q.id + '_seen'] = a[q.id + '_seen'] ?? ''; } }
+    else if (q.type === 'scoe') { r[q.id] = v ? v.v : ''; r[q.id + '_text'] = v ? v.text || '' : ''; }
+    else if (q.type === 'mcsc') { r[q.id] = v ? (v.sel || []).join('|') : ''; r[q.id + '_top'] = v ? v.top ?? '' : ''; }
+    else if (q.type === 'mc' || q.type === 'rank') r[q.id] = v ? v.join('|') : '';
+    else { r[q.id] = v ?? ''; if (q.recFlag) r[q.id + '_rec'] = a[q.id + '_rec'] ? 1 : ''; }
+    if (q.options && q.options.some(o => o.c === 97)) r[q.id + '_other'] = a[q.id + '_other'] || '';
+  });
+  r.G5_contact = a.G5_contact || '';
+  return r;
+}
+const csvCell = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+function toCSV(docs) { const cols = columns(); return [cols.join(','), ...docs.map(d => { const r = flatten(d); return cols.map(c => csvCell(r[c])).join(','); })].join('\n'); }
+function parseCSV(text) {
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) { const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true; else if (ch === ',') { row.push(cell); cell = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; } else cell += ch; }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c !== ''));
+}
+function unflatten(obj) {
+  const n = v => v === '' || v == null ? undefined : Number(v);
+  const a = {};
+  SCH.forEach(q => {
+    if (q.type === 'gridnum' || q.type === 'gridsc') { const g = {}; let any = false; q.rows.forEach((_, i) => { const v = n(obj[`${q.id}_r${i + 1}`]); if (isNum(v)) { g[i] = v; any = true; } }); if (any) a[q.id] = g; if (q.flag && obj[q.id + '_fewer']) { a[q.id + '_fewer'] = true; a[q.id + '_seen'] = n(obj[q.id + '_seen']); } }
+    else if (q.type === 'scoe') { if (obj[q.id]) a[q.id] = { v: n(obj[q.id]), text: obj[q.id + '_text'] || '' }; }
+    else if (q.type === 'mcsc') { if (obj[q.id]) a[q.id] = { sel: obj[q.id].split('|').map(Number), top: n(obj[q.id + '_top']) }; }
+    else if (q.type === 'mc' || q.type === 'rank') { if (obj[q.id]) a[q.id] = obj[q.id].split('|').map(Number); }
+    else if (q.type === 'oe') { if (obj[q.id]) a[q.id] = obj[q.id]; }
+    else { const v = n(obj[q.id]); if (isNum(v)) a[q.id] = v; if (q.recFlag && obj[q.id + '_rec']) a[q.id + '_rec'] = true; }
+    if (obj[q.id + '_other']) a[q.id + '_other'] = obj[q.id + '_other'];
+  });
+  return a;
+}
+let importMsg = '';
+function renderData() {
+  if (VIEW !== 'data') return;
+  const targets = store.get('sem_targets') || { G: 25, E: 25, D: 25, C: 25 };
+  const comp = realDocs.filter(d => d.status === 'complete').length;
+  dataV.innerHTML = `
+    <div class="card stack"><h2>Response store</h2>
+      <p><b>${realDocs.length}</b> records saved in this browser (${comp} complete, ${realDocs.length - comp} screened out or other).</p>
+      <p class="muted">This Cloudflare-ready static build stores responses in local browser storage. For live multi-respondent fieldwork, place it behind Cloudflare Access and export CSVs from each collection device, or connect a server-side form endpoint later.</p></div>
+    <div class="card stack"><h2>Export</h2>
+      <p class="muted">One row per response, one column per answer. Multiple choices and rankings are coded like <code>1|4|7</code>; grids use <code>C3_r1</code>, <code>C3_r2</code> and so on; codes follow the questionnaire workbook.</p>
+      <div class="row"><button class="btn primary" id="expBtn" ${realDocs.length ? '' : 'disabled'}>Download responses (CSV)</button><button class="btn" id="tplBtn">Download blank template (CSV)</button></div></div>
+    <div class="card stack"><h2>Import responses collected elsewhere</h2>
+      <p class="muted">Use this when fieldwork runs on another survey platform. Map that platform’s export to the blank template columns, then upload. Imported rows are marked <code>source = import</code> and appear in the dashboard immediately.</p>
+      <div class="row"><input type="file" id="impFile" accept=".csv,text/csv"><button class="btn" id="impBtn">Import</button><button class="btn" id="clearBtn" ${realDocs.length ? '' : 'disabled'}>Clear local records</button></div>
+      ${importMsg ? `<div class="banner ${/fail|error|No /i.test(importMsg) ? 'crit' : 'good'}">${esc(importMsg)}</div>` : ''}</div>
+    <div class="card stack"><h2>Quota targets</h2><p class="muted">Used by the fieldwork chart. Saved in this browser only.</p>
+      <div class="row">${['G','E','D','C'].map(s => `<label class="chk" style="color:var(--ink)">${SPEC_NAME[s]} <input class="num" style="width:80px" type="number" min="1" id="tgt-${s}" value="${targets[s]}"></label>`).join('')}</div></div>
+    <div class="card stack"><h2>Before fieldwork</h2>
+      <ul style="margin:0;padding-left:20px;display:grid;gap:6px">
+        <li>Deploy behind Cloudflare Access or another authentication layer if respondents should be restricted.</li>
+        <li>Obtain institutional permissions and ethics review as each institute requires.</li>
+        <li>Pilot with 2-3 respondents per specialty, check timing on the dashboard, then clear pilot rows before analysis.</li>
+      </ul></div>`;
+  const e = dataV.querySelector('#expBtn'); if (e) e.onclick = () => dl('semaglutide_survey_responses.csv', toCSV(realDocs));
+  const t = dataV.querySelector('#tplBtn'); if (t) t.onclick = () => dl('semaglutide_survey_template.csv', columns().join(','));
+  ['G','E','D','C'].forEach(s => { const inp = dataV.querySelector('#tgt-' + s); inp.onchange = () => { const tg = store.get('sem_targets') || { G: 25, E: 25, D: 25, C: 25 }; tg[s] = Math.max(1, +inp.value || 1); store.set('sem_targets', tg); }; });
+  const ib = dataV.querySelector('#impBtn'); if (ib) ib.onclick = doImport;
+  const cb = dataV.querySelector('#clearBtn'); if (cb) cb.onclick = () => { realDocs = []; persistDocs(); importMsg = 'Local records cleared.'; renderData(); if (VIEW === 'dash') renderDash(); };
+}
+async function dl(filename, data) {
+  try {
+    const blob = new Blob([data], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) { importMsg = 'Download failed in this browser.'; renderData(); }
+}
+async function doImport() {
+  const f = dataV.querySelector('#impFile').files[0];
+  if (!f) { importMsg = 'No file chosen.'; return renderData(); }
+  const rows = parseCSV(await f.text());
+  if (rows.length < 2) { importMsg = 'No data rows found in the file.'; return renderData(); }
+  const head = rows[0].map(h => h.trim()); const need = ['A1'];
+  if (!need.every(c => head.includes(c))) { importMsg = 'Import failed: the file needs template columns, including A1 (specialty).'; return renderData(); }
+  let ok = 0, bad = 0;
+  for (const r of rows.slice(1)) {
+    const obj = Object.fromEntries(head.map((h, i) => [h, r[i] ?? '']));
+    const a = unflatten(obj); const s = SPEC[a.A1];
+    if (!s) { bad++; continue; }
+    const doc = { status: obj.status || 'complete', reason: null, version: 'v2.0', source: 'import', specialty: s, inst: a.A2 ?? null, designation: a.A4 ?? null, startedAt: obj.startedAt || null, submittedAt: obj.submittedAt || new Date().toISOString(), durationSec: obj.durationSec ? Number(obj.durationSec) : null, attentionFail: a.D4 ? a.D4[8] !== 4 : false, answers: a };
+    try { addDoc(doc); ok++; } catch (e) { bad++; }
+  }
+  importMsg = `Imported ${ok} row${ok === 1 ? '' : 's'}${bad ? `; ${bad} skipped (missing or invalid specialty, or save error)` : ''}.`;
+  renderData();
+}
+
+/* ---------------- tooltip ---------------- */
+const tip = document.getElementById('tip');
+document.addEventListener('mousemove', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (!t) { tip.style.display = 'none'; return; } tip.textContent = t.dataset.tip; tip.style.display = 'block'; const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8); tip.style.left = x + 'px'; tip.style.top = (e.clientY + 16) + 'px'; });
+
+/* ---------------- boot ---------------- */
+renderSurvey();
+const lastTab = store.get('sem_tab'); if (lastTab && lastTab !== 'survey') show(lastTab);
+</script>
+</body>
+</html>
