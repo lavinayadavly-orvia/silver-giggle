@@ -81,10 +81,12 @@ p{margin:0}
 .progress{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
 .progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
 .secname{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.q{padding:18px 0;border-top:1px solid var(--rule);display:grid;gap:10px}
+.q-shell{max-width:760px;margin:0 auto}
+.q-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.q{padding:8px 0 12px;display:grid;gap:12px}
 .q:first-of-type{border-top:0}
 .qid{font-size:12px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums}
-.qtext{font-weight:600;font-size:16px}
+.qtext{font-weight:700;font-size:22px;line-height:1.25;text-wrap:balance}
 .qhelp{font-size:13px;color:var(--muted)}
 .qerr{font-size:13px;color:var(--crit);font-weight:600}
 .opts{display:grid;gap:6px}
@@ -154,7 +156,7 @@ details.all .card{background:var(--surface)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:10px}
 .bar.ev{grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 118px}
-@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr} }
+@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.qtext{font-size:19px}.q-head{display:grid} }
 @media (max-width:620px){ .bar.ev{grid-template-columns:minmax(0,1fr) 110px} .bar.ev .lab{grid-column:1/-1} .filters{position:static} .bar{grid-template-columns:minmax(0,1fr) 80px 40px} .grow{grid-template-columns:1fr} .tabs{margin-left:0} .filters{top:calc(env(safe-area-inset-top,0px) + 96px)} }
 @media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
 </style>
@@ -261,7 +263,7 @@ function renderAdminLogin(target) {
 /* ---------------- survey ---------------- */
 let S = store.get('sem_draft') || { answers: {}, page: -1, startedAt: null };
 const sv = document.getElementById('view-survey');
-function pagesFor(a) { return SECS.filter(sec => SCH.some(q => q.sec === sec && visible(q, a))); }
+function pagesFor(a) { return SCH.filter(q => visible(q, a)); }
 function renderSurvey(errors) {
   const a = S.answers;
   if (S.page === -1) {
@@ -293,15 +295,21 @@ function renderSurvey(errors) {
   }
   const pages = pagesFor(a);
   if (S.page >= pages.length) S.page = pages.length - 1;
-  const sec = pages[S.page];
-  const qs = SCH.filter(q => q.sec === sec && visible(q, a));
+  const q = pages[S.page];
+  const qs = [q];
   const pct = Math.round(100 * (S.page) / Math.max(pages.length, 1));
+  const actionLabel = q.id === 'G5' ? 'Submit' : 'Continue';
   sv.innerHTML = `<div class="progress" aria-label="Progress"><i style="width:${pct}%"></i></div>
-    <div class="card"><div class="row" style="justify-content:space-between"><span class="secname">${esc(sec.replace(/^[A-Z]\. /, ''))}</span><span class="n">Part ${S.page + 1} of ${pages.length}</span></div>
+    <div class="card q-shell"><div class="q-head"><span class="secname">${esc(q.sec.replace(/^[A-Z]\. /, ''))}</span><span class="n">Question ${S.page + 1}</span></div>
     <div id="qs">${qs.map(q => qHTML(q, a, errors && errors[q.id])).join('')}</div>
-    <div class="nav"><button class="btn" id="backBtn" ${S.page === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" id="nextBtn">${S.page === pages.length - 1 ? 'Submit' : 'Next'}</button></div></div>`;
+    <div class="nav"><button class="btn" id="backBtn" ${S.page === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" id="nextBtn">${actionLabel}</button></div></div>`;
   bindQ(qs);
-  sv.querySelector('#backBtn').onclick = () => { S.page--; save(); renderSurvey(); window.scrollTo(0,0); };
+  sv.querySelector('#backBtn').onclick = () => {
+    const pagesNow = pagesFor(S.answers);
+    const i = Math.max(0, pagesNow.findIndex(x => x.id === q.id));
+    S.page = Math.max(0, i - 1);
+    save(); renderSurvey(); scrollToSurveyTop();
+  };
   sv.querySelector('#nextBtn').onclick = next;
 }
 function save() { store.set('sem_draft', S); }
@@ -358,7 +366,7 @@ function qHTML(q, a, err) {
 function bindQ(qs) {
   const a = S.answers, root = sv;
   const rerender = () => { save(); const y = window.scrollY; renderSurvey(); window.scrollTo(0, y); };
-  const needsTypedFollowup = (q, c) => c === 97 || (q.type === 'scoe' && c === 1) || (q.id === 'G5' && c === 1);
+  const needsTypedFollowup = (q, c) => (c === 97 && q.id !== 'A1' && q.id !== 'A2') || (q.type === 'scoe' && c === 1) || (q.id === 'G5' && c === 1);
   root.querySelectorAll('input[type=radio]').forEach(el => el.onchange = () => {
     const q = BY[el.name]; const c = +el.value;
     if (q.type === 'scoe') a[q.id] = { ...(a[q.id] || {}), v: c }; else a[q.id] = c;
@@ -433,16 +441,20 @@ function validate(q, a) {
   return null;
 }
 async function next() {
-  const a = S.answers; const pages = pagesFor(a); const sec = pages[S.page];
-  const qs = SCH.filter(q => q.sec === sec && visible(q, a));
+  const a = S.answers; const pages = pagesFor(a);
+  const qs = pages[S.page] ? [pages[S.page]] : [];
+  const current = qs[0];
   const errors = {}; qs.forEach(q => { const e = validate(q, a); if (e) errors[q.id] = e; });
   if (Object.keys(errors).length) { renderSurvey(errors); const f = sv.querySelector('.qerr'); scrollToQuestion(f && f.closest('.q')); return; }
   // clear answers for questions no longer visible
   SCH.forEach(q => { if (!visible(q, a) && a[q.id] !== undefined && q.sec !== SECS[0]) delete a[q.id]; });
   const t = terminated(a);
   if (t) return finish('screened_out', t);
-  if (S.page === pages.length - 1) return finish('complete');
-  S.page++; save(); renderSurvey(); scrollToSurveyTop();
+  if (current && current.id === 'G5') return finish('complete');
+  const updatedPages = pagesFor(a);
+  const i = current ? updatedPages.findIndex(q => q.id === current.id) : S.page;
+  if (i >= updatedPages.length - 1) return finish('complete');
+  S.page = i + 1; save(); renderSurvey(); scrollToSurveyTop();
 }
 async function finish(status, reason) {
   const a = S.answers;
