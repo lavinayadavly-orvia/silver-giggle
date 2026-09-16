@@ -38,14 +38,18 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(247,248,246,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:12px 16px}
 .top-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
-.brand{display:inline-flex;align-items:center;text-decoration:none}
+.brand-cluster{display:inline-flex;align-items:center;gap:14px}
+.brand-cluster:after{content:"";width:1px;height:32px;background:var(--rule);order:1}
+.brand{display:inline-flex;align-items:center;text-decoration:none;order:0}
 .brand img{display:block;width:174px;height:auto;border-radius:6px}
+.partner-logo{display:block;width:148px;max-height:42px;object-fit:contain;order:2}
 .tabs{display:none;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
 body[data-admin="true"] .tabs{display:flex}
 .tab{border:0;background:transparent;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .wrap{max-width:1180px;margin:0 auto;padding-top:42px}
 .narrow{max-width:780px;margin:0 auto}
+#view-survey.narrow{max-width:1180px}
 h1,h2,h3{margin:0;text-wrap:balance}
 h1{font-family:var(--serif);font-size:26px;line-height:1.2}
 h2{font-family:var(--serif);font-size:20px;line-height:1.25}
@@ -81,24 +85,25 @@ p{margin:0}
 .progress{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
 .progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
 .secname{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.card.q-shell{max-width:1080px;margin:0 auto;padding:0;display:grid;grid-template-columns:310px minmax(0,1fr);overflow:hidden;background:#fdfaf6;border-color:#eadfd5;box-shadow:0 24px 70px rgba(44,38,31,.11)}
-.journey-pane{background:var(--card);padding:34px 28px;border-right:1px solid #eadfd5;display:grid;align-content:start;gap:26px}
+.card.q-shell{max-width:1180px;margin:0 auto;padding:0;display:grid;grid-template-columns:420px minmax(0,1fr);overflow:hidden;background:#fdfaf6;border-color:#eadfd5;box-shadow:0 24px 70px rgba(44,38,31,.11);min-height:620px}
+.journey-pane{background:var(--card);padding:46px 40px;border-right:1px solid #eadfd5;display:grid;align-content:start;gap:30px}
 .journey-kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
 .journey-title{font-family:var(--serif);font-size:30px;line-height:1.05;color:var(--ink)}
 .steps{display:grid;gap:0;position:relative}
-.step{display:grid;grid-template-columns:30px 1fr;gap:12px;position:relative;padding-bottom:20px;color:var(--muted)}
+.step{display:grid;grid-template-columns:32px 1fr;gap:14px;position:relative;padding-bottom:20px;color:var(--muted)}
 .step:before{content:"";position:absolute;left:14px;top:30px;bottom:0;border-left:1px solid #eadfd5}
 .step:last-child{padding-bottom:0}.step:last-child:before{display:none}
 .step-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid #eadfd5;background:var(--card);font-size:12px;font-weight:700;color:var(--faint);z-index:1}
 .step.done .step-dot,.step.active .step-dot{background:#f7a64b;border-color:#f7a64b;color:#3b2612}
 .step.active{color:var(--ink)}
 .step b{display:block;font-size:14px;line-height:1.2}.step span{display:block;font-size:12px;color:var(--faint);margin-top:2px}
-.question-pane{padding:34px;display:grid;gap:22px;align-content:start;background:linear-gradient(135deg,#fffaf2,#f6faf7)}
+.question-pane{padding:46px 52px;display:grid;gap:24px;align-content:start;background:linear-gradient(135deg,#fffaf2,#f6faf7)}
+.question-pane #qs,.question-pane .nav{max-width:620px;width:100%}
 .q-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .q{padding:0;display:grid;gap:16px}
 .q:first-of-type{border-top:0}
 .qid{font-size:12px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums}
-.qtext{font-family:var(--serif);font-weight:700;font-size:32px;line-height:1.12;text-wrap:balance;color:#2b221c}
+.qtext{font-family:var(--serif);font-weight:700;font-size:34px;line-height:1.1;text-wrap:balance;color:#2b221c}
 .qhelp{font-size:13px;color:var(--muted)}
 .qerr{font-size:13px;color:var(--crit);font-weight:600}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px}
@@ -108,7 +113,8 @@ p{margin:0}
 .opt.sel{border-color:#f7a64b;background:#fff5e8;box-shadow:0 14px 30px rgba(247,166,75,.14)}
 .opt .rk{min-width:22px;height:22px;border-radius:11px;border:1px solid var(--rule);display:inline-grid;place-items:center;font-size:12px;font-weight:700}
 .opt.sel .rk{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.txt{width:100%;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86)}
+.txt{width:100%;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86);min-height:52px}
+textarea.txt{min-height:140px;resize:vertical}
 .num{width:140px;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86);font-variant-numeric:tabular-nums}
 .chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
 .grid-q{display:grid;gap:8px}
@@ -168,8 +174,8 @@ details.all .card{background:var(--surface)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:10px}
 .bar.ev{grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 118px}
-@media (max-width:860px){ .card.q-shell{grid-template-columns:1fr}.journey-pane{border-right:0;border-bottom:1px solid #eadfd5;padding:20px;gap:14px}.journey-title{font-size:24px}.journey-pane .muted{display:none}.steps{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}.step{display:flex;align-items:center;min-width:max-content;padding:0}.step:before,.step span{display:none}.step-dot{width:24px;height:24px;flex:0 0 auto}.step b{font-size:12px;white-space:nowrap}.question-pane{padding:24px} }
-@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.qtext{font-size:24px}.q-head{display:grid}.opts{grid-template-columns:1fr} }
+@media (max-width:860px){ .card.q-shell{grid-template-columns:1fr;min-height:0}.journey-pane{border-right:0;border-bottom:1px solid #eadfd5;padding:20px;gap:14px}.journey-title{font-size:24px}.journey-pane .muted{display:none}.steps{display:flex;gap:8px;align-items:center;overflow:hidden;padding-bottom:2px}.step{display:flex;align-items:center;min-width:auto;padding:0;gap:6px}.step.active{flex:1 1 auto;min-width:0}.step:before,.step span,.step b{display:none}.step.active b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.step-dot{width:24px;height:24px;flex:0 0 auto}.question-pane{padding:24px}.question-pane #qs,.question-pane .nav{max-width:none} }
+@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.qtext{font-size:24px}.q-head{display:grid}.opts{grid-template-columns:1fr}.brand-cluster{gap:10px}.brand img{width:150px}.partner-logo{width:118px} }
 @media (max-width:620px){ .bar.ev{grid-template-columns:minmax(0,1fr) 110px} .bar.ev .lab{grid-column:1/-1} .filters{position:static} .bar{grid-template-columns:minmax(0,1fr) 80px 40px} .grow{grid-template-columns:1fr} .tabs{margin-left:0} .filters{top:calc(env(safe-area-inset-top,0px) + 96px)} }
 @media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
 </style>
@@ -177,8 +183,11 @@ details.all .card{background:var(--surface)}
 <body>
 
 <div class="top"><div class="top-in">
-  <a class="brand" href="index.html" aria-label="Silver Giggle home"><img src="assets/silver-giggle-logo-horizontal-on-navy.svg" alt="Silver Giggle"></a>
-  <button class="console-link" type="button" data-view="dash">Admin login</button>
+  <div class="brand-cluster">
+    <a class="brand" href="index.html" aria-label="Silver Giggle home"><img src="assets/silver-giggle-logo-horizontal-on-navy.svg" alt="Silver Giggle"></a>
+    <img class="partner-logo" src="assets/partner-logo.svg" alt="">
+  </div>
+  <button class="console-link" type="button" data-view="dash">Study team</button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-survey" aria-selected="true" data-view="survey">Survey</button>
     <button class="tab" role="tab" id="tab-dash" aria-selected="false" data-view="dash">Dashboard</button>
@@ -199,7 +208,24 @@ const BY = Object.fromEntries(SCH.map(q => [q.id, q]));
 const SECS = [...new Set(SCH.map(q => q.sec))];
 const SPEC = {1:'G',2:'G',3:'E',4:'D',5:'C'};
 const SPEC_NAME = {G:'Gynaecology',E:'Endocrinology',D:'Diabetology',C:'Cardiology'};
-const INST = {1:'Central institute of national importance',2:'Other central govt college/hospital',3:'State govt college/hospital',4:'Municipal college/hospital',5:'Private teaching hospital'};
+const INST = {1:'Central institute of national importance',2:'Other central govt college/hospital',3:'State govt college/hospital',4:'Municipal college/hospital',5:'Private teaching hospital',6:'Private or trust hospital'};
+const PRIVATE_DESIGNATIONS = [
+  {c: 11, t: 'Owner / Director'},
+  {c: 12, t: 'Senior consultant'},
+  {c: 13, t: 'Consultant'},
+  {c: 14, t: 'Visiting consultant'},
+  {c: 15, t: 'Medical officer'},
+  {c: 16, t: 'Resident / DNB trainee'},
+  {c: 97, t: 'Other'}
+];
+function optionsFor(q, a = {}) {
+  if (!q.options) return [];
+  if (q.id === 'A4') {
+    if (a.A2 === 6) return PRIVATE_DESIGNATIONS;
+    if (!a.A2) return [...q.options, ...PRIVATE_DESIGNATIONS.filter(o => !q.options.some(x => x.c === o.c))];
+  }
+  return q.options;
+}
 const isNum = v => typeof v === 'number' && !isNaN(v);
 const pos = v => isNum(v) && v > 0 && v < 90;
 const SHOW = {
@@ -217,7 +243,7 @@ function visible(q, a) {
 function terminated(a) {
   if (a.A0 === 2) return 'Declined consent';
   if (a.A1 === 97) return 'Specialty out of scope';
-  if (a.A2 === 97 || a.A2 === 6) return 'Institution out of scope';
+  if (a.A2 === 97) return 'Institution out of scope';
   if (a.A5 === 0) return 'No OPD sessions';
   return null;
 }
@@ -255,13 +281,12 @@ function show(v) {
 function renderAdminLogin(target) {
   const root = target === 'data' ? dataV : dv;
   root.innerHTML = `<div class="card stack admin-login">
-    <span class="secname">Admin login</span>
+    <span class="secname">Restricted area</span>
     <h1>Study team access</h1>
-    <p class="muted">Dashboard and Data are for admin users only. Doctors using the survey link will not see these tabs.</p>
-    <label class="stack"><span class="admin-note">Passcode</span><input id="adminPass" type="password" autocomplete="current-password" placeholder="Enter admin passcode"></label>
-    <div class="row"><button class="btn primary" id="adminBtn">Log in</button><button class="btn" id="adminBack">Back to survey</button></div>
-    <div id="adminErr" class="qerr" hidden>Incorrect passcode.</div>
-    <p class="admin-note">For production, keep the admin URL behind Cloudflare Access as the real authentication layer.</p>
+    <p class="muted">This area is reserved for the study team.</p>
+    <label class="stack"><span class="admin-note">Access code</span><input id="adminPass" type="password" autocomplete="current-password" placeholder="Enter access code"></label>
+    <div class="row"><button class="btn primary" id="adminBtn">Continue</button><button class="btn" id="adminBack">Back to survey</button></div>
+    <div id="adminErr" class="qerr" hidden>Incorrect access code.</div>
   </div>`;
   root.querySelector('#adminBtn').onclick = () => {
     if (root.querySelector('#adminPass').value === ADMIN_PASSCODE) {
@@ -294,7 +319,7 @@ function renderSurvey(errors) {
         <h1>Welcome</h1>
         <p class="intro-copy">A focused specialist survey on how GLP-1 therapies are used across patient types, product choices, and referral pathways in clinical practice.</p>
         <div class="pill-row"><span class="pill">15-20 minutes</span><span class="pill">Confidential reporting</span><span class="pill">No product promotion</span></div>
-        <p class="muted">Your draft is saved on this device until you submit. You may skip any question or stop at any time.</p>
+        <p class="muted">You may skip any question or stop at any time before submitting.</p>
         <div class="row"><button class="btn primary" id="startBtn">${Object.keys(a).length ? 'Continue survey' : 'Start survey'}</button>${Object.keys(a).length ? '<button class="btn" id="resetBtn">Start over</button>' : ''}</div>
       </div><div class="intro-panel">
         <div class="trust-list">
@@ -309,7 +334,7 @@ function renderSurvey(errors) {
     return;
   }
   if (S.page === 'done') {
-    sv.innerHTML = `<div class="card stack"><span class="secname">${S.doneKind === 'screen' ? 'Thank you' : 'Submitted'}</span><h1>${S.doneKind === 'screen' ? 'Thank you for your time' : 'Thank you, your response is recorded'}</h1><p class="muted">${S.doneKind === 'screen' ? 'This survey is for practising specialists in the four specialties at government and academic institutes. Based on your answers, the remaining questions do not apply.' : 'Your answers have been saved. You can close this page.'}</p>${S.saveMsg ? `<div class="banner ${S.saveOk ? 'good' : 'crit'}">${esc(S.saveMsg)}</div>` : ''}<div class="row">${S.lastDoc ? '<button class="btn primary" id="pdfBtn">Download PDF of my responses</button>' : ''}<button class="btn" id="newBtn">Record another response</button></div></div>`;
+    sv.innerHTML = `<div class="card stack"><span class="secname">${S.doneKind === 'screen' ? 'Thank you' : 'Submitted'}</span><h1>${S.doneKind === 'screen' ? 'Thank you for your time' : 'Thank you, your response is recorded'}</h1><p class="muted">${S.doneKind === 'screen' ? 'This survey is for practising specialists in the four specialties at government and academic institutes. Based on your answers, the remaining questions do not apply.' : 'Thank you for completing the survey. You can close this page.'}</p>${S.saveMsg ? `<div class="banner ${S.saveOk ? 'good' : 'crit'}">${esc(S.saveMsg)}</div>` : ''}<div class="row">${S.lastDoc ? '<button class="btn primary" id="pdfBtn">Download PDF of my responses</button>' : ''}<button class="btn" id="newBtn">Record another response</button></div></div>`;
     const p = sv.querySelector('#pdfBtn'); if (p) p.onclick = () => downloadResponsePdf(S.lastDoc);
     sv.querySelector('#newBtn').onclick = () => { S = { answers:{}, page:-1, startedAt:null }; save(); renderSurvey(); };
     return;
@@ -323,7 +348,7 @@ function renderSurvey(errors) {
   sv.innerHTML = `<div class="progress" aria-label="Progress"><i style="width:${pct}%"></i></div>
     <div class="card q-shell">
       <aside class="journey-pane">
-        <div class="stack"><span class="journey-kicker">Silver Giggle</span><div class="journey-title">Take care of the research details</div><p class="muted">Move through each section at your pace. Your draft stays on this device until submission.</p></div>
+        <div class="stack"><span class="journey-kicker">Silver Giggle</span><div class="journey-title">Take care of the research details</div><p class="muted">Move through each section at your pace. You may stop at any time before submitting.</p></div>
         ${surveyStepsHTML(q)}
       </aside>
       <section class="question-pane">
@@ -354,25 +379,26 @@ function scrollToQuestion(el, behavior = 'smooth') {
 }
 function qHTML(q, a, err) {
   const v = a[q.id];
+  const opts = optionsFor(q, a);
   let body = '';
   const optRow = (o, type, checked, extra = '') => `<label class="opt ${checked ? 'sel' : ''}"><input type="${type}" name="${q.id}" value="${o.c}" ${checked ? 'checked' : ''}><span>${esc(o.t)}${extra}</span></label>`;
   if (q.type === 'sc' || q.type === 'scoe') {
     const cur = q.type === 'scoe' ? (v || {}).v : v;
-    body = `<div class="opts">${q.options.map(o => optRow(o, 'radio', cur === o.c)).join('')}</div>`;
-    if (q.options.some(o => o.c === 97) && cur === 97) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
+    body = `<div class="opts">${opts.map(o => optRow(o, 'radio', cur === o.c)).join('')}</div>`;
+    if (opts.some(o => o.c === 97) && cur === 97) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
     if (q.id === 'G5' && cur === 1) body += `<input class="txt" data-contact="G5" type="text" autocomplete="email" placeholder="Email or phone" value="${esc(a.G5_contact)}">`;
     if (q.type === 'scoe' && cur === 1) body += `<input class="txt" data-scoe="${q.id}" placeholder="Product or source" value="${esc((v || {}).text)}">`;
   } else if (q.type === 'mc' || q.type === 'mcsc') {
     const sel = q.type === 'mcsc' ? ((v || {}).sel || []) : (v || []);
-    body = `<div class="opts">${q.options.map(o => optRow(o, 'checkbox', sel.includes(o.c))).join('')}</div>`;
+    body = `<div class="opts">${opts.map(o => optRow(o, 'checkbox', sel.includes(o.c))).join('')}</div>`;
     if (sel.includes(97)) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
     if (q.type === 'mcsc') {
-      const choices = q.options.filter(o => sel.includes(o.c) && o.c < 90);
+      const choices = opts.filter(o => sel.includes(o.c) && o.c < 90);
       if (choices.length > 1) body += `<div class="qhelp">Which was the most common?</div><div class="chips">${choices.map(o => `<button type="button" class="chip ${(v || {}).top === o.c ? 'sel' : ''}" data-top="${q.id}" data-c="${o.c}">${esc(o.t)}</button>`).join('')}</div>`;
     }
   } else if (q.type === 'rank') {
     const order = v || [];
-    body = `<div class="opts">${q.options.map(o => { const i = order.indexOf(o.c); const ex = o.c >= 90; return `<button type="button" class="opt ${i >= 0 ? 'sel' : ''}" data-rank="${q.id}" data-c="${o.c}" style="text-align:left"><span class="rk">${i >= 0 ? (ex ? '✓' : i + 1) : ''}</span><span>${esc(o.t)}</span></button>`; }).join('')}</div>`;
+    body = `<div class="opts">${opts.map(o => { const i = order.indexOf(o.c); const ex = o.c >= 90; return `<button type="button" class="opt ${i >= 0 ? 'sel' : ''}" data-rank="${q.id}" data-c="${o.c}" style="text-align:left"><span class="rk">${i >= 0 ? (ex ? '✓' : i + 1) : ''}</span><span>${esc(o.t)}</span></button>`; }).join('')}</div>`;
     if (order.includes(97)) body += `<input class="txt" data-other="${q.id}" placeholder="Please specify" value="${esc(a[q.id + '_other'])}">`;
   } else if (q.type === 'num') {
     const dk = isNum(v) && v === (q.dkCode || 98) && (q.max == null || v > q.max);
@@ -441,8 +467,9 @@ function bindQ(qs) {
 }
 function validate(q, a) {
   const v = a[q.id];
+  const opts = optionsFor(q, a);
   if (q.type === 'oe') return (q.required && q.id !== 'G4' && !String(v || '').trim()) ? 'Please answer this question.' : null;
-  if (q.type === 'sc') { if (!isNum(v)) return 'Please select an option.'; if (q.id === 'G5' && v === 1 && !String(a.G5_contact || '').trim()) return 'Please share an email address or phone number, or select No.'; if (v === 97 && q.options.some(o => o.c === 97) && q.id !== 'A1' && q.id !== 'A2' && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'sc') { if (!isNum(v)) return 'Please select an option.'; if (q.id === 'G5' && v === 1 && !String(a.G5_contact || '').trim()) return 'Please share an email address or phone number, or select No.'; if (v === 97 && opts.some(o => o.c === 97) && q.id !== 'A1' && q.id !== 'A2' && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
   if (q.type === 'scoe') return (!v || !isNum(v.v)) ? 'Please select an option.' : null;
   if (q.type === 'mc') { if (!v || !v.length) return 'Please select at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
   if (q.type === 'mcsc') { if (!v || !(v.sel || []).length) return 'Please select at least one option.'; if (v.sel.filter(x => x < 90).length > 1 && !isNum(v.top)) return 'Please mark the most common reason.'; return null; }
@@ -504,7 +531,7 @@ async function finish(status, reason) {
     S.answers = {};
     S.startedAt = null;
   }
-  catch (e) { S.saveOk = false; S.saveMsg = 'Saving failed in this browser. Your answers are kept as a draft on this device.'; }
+  catch (e) { S.saveOk = false; S.saveMsg = 'We could not record the response. Please keep this page open and try again.'; }
   save(); renderSurvey();
 }
 
@@ -515,15 +542,16 @@ function optionText(options, code) {
 function answerText(q, a) {
   const v = a[q.id];
   if (v === undefined || v === null || v === '') return '';
+  const opts = optionsFor(q, a);
   let out = '';
-  if (q.type === 'sc') out = optionText(q.options, v);
-  else if (q.type === 'scoe') out = optionText(q.options, v.v) + (v.text ? ` - ${v.text}` : '');
-  else if (q.type === 'mc') out = (v || []).map(c => optionText(q.options, c)).join('; ');
+  if (q.type === 'sc') out = optionText(opts, v);
+  else if (q.type === 'scoe') out = optionText(opts, v.v) + (v.text ? ` - ${v.text}` : '');
+  else if (q.type === 'mc') out = (v || []).map(c => optionText(opts, c)).join('; ');
   else if (q.type === 'mcsc') {
-    const selected = (v.sel || []).map(c => optionText(q.options, c)).join('; ');
-    out = selected + (v.top ? ` | Most common: ${optionText(q.options, v.top)}` : '');
+    const selected = (v.sel || []).map(c => optionText(opts, c)).join('; ');
+    out = selected + (v.top ? ` | Most common: ${optionText(opts, v.top)}` : '');
   }
-  else if (q.type === 'rank') out = (v || []).map((c, i) => `${i + 1}. ${optionText(q.options, c)}`).join('; ');
+  else if (q.type === 'rank') out = (v || []).map((c, i) => `${i + 1}. ${optionText(opts, c)}`).join('; ');
   else if (q.type === 'num') {
     const dk = q.dkCode && v === q.dkCode && (q.max == null || v > q.max);
     out = dk ? q.dkLabel : String(v);
@@ -638,17 +666,18 @@ function cardHTML(q, inner, n, note) {
 function genericCard(q, docs) {
   const base = docs.filter(d => ans(d, q.id) !== undefined);
   const n = base.length;
+  const opts = optionsFor(q);
   let inner = '';
   if (q.type === 'sc' || q.type === 'scoe') {
     const get = d => q.type === 'scoe' ? (ans(d, q.id) || {}).v : ans(d, q.id);
-    inner = barsHTML(q.options.map(o => { const c = base.filter(d => get(d) === o.c).length; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: ${c} of ${n} (${pct(c, n)}%)` }; }), { max: 100 });
+    inner = barsHTML(opts.map(o => { const c = base.filter(d => get(d) === o.c).length; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: ${c} of ${n} (${pct(c, n)}%)` }; }), { max: 100 });
     if (q.type === 'scoe') { const t = base.map(d => (ans(d, q.id) || {}).text).filter(Boolean); if (t.length) inner += `<div class="quotes" style="margin-top:10px">${t.slice(-15).map(x => `<div>${esc(x)}</div>`).join('')}</div>`; }
   } else if (q.type === 'mc' || q.type === 'mcsc') {
     const get = d => q.type === 'mcsc' ? (ans(d, q.id) || {}).sel || [] : ans(d, q.id) || [];
-    const items = q.options.map(o => { const c = base.filter(d => get(d).includes(o.c)).length; const top = q.type === 'mcsc' ? base.filter(d => (ans(d, q.id) || {}).top === o.c || (get(d).filter(x => x < 90).length === 1 && get(d)[0] === o.c)).length : null; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: selected by ${c} of ${n}` + (top != null ? `; most common for ${top}` : '') }; });
+    const items = opts.map(o => { const c = base.filter(d => get(d).includes(o.c)).length; const top = q.type === 'mcsc' ? base.filter(d => (ans(d, q.id) || {}).top === o.c || (get(d).filter(x => x < 90).length === 1 && get(d)[0] === o.c)).length : null; return { label: o.t, v: pct(c, n), disp: pct(c, n) + '%', tip: `${o.t}: selected by ${c} of ${n}` + (top != null ? `; most common for ${top}` : '') }; });
     inner = barsHTML(items.sort((x, y) => y.v - x.v), { max: 100 }) + '<div class="legend">% of respondents selecting; multiple answers allowed</div>';
   } else if (q.type === 'rank') {
-    const items = q.options.map(o => { let score = 0, first = 0; base.forEach(d => { const r = ans(d, q.id) || []; const i = r.indexOf(o.c); if (i >= 0 && o.c < 90) { score += 3 - i; if (i === 0) first++; } else if (i >= 0) score += 0; }); const sel = base.filter(d => (ans(d, q.id) || []).includes(o.c)).length; return { label: o.t, v: o.c >= 90 ? pct(sel, n) / 33 : score / n, disp: o.c >= 90 ? pct(sel, n) + '%' : fmt(score / n, 2), tip: o.c >= 90 ? `${o.t}: ${sel} of ${n}` : `${o.t}: score ${fmt(score / n, 2)} (3 pts for rank 1, 2 for rank 2, 1 for rank 3); ranked first by ${first}` }; });
+    const items = opts.map(o => { let score = 0, first = 0; base.forEach(d => { const r = ans(d, q.id) || []; const i = r.indexOf(o.c); if (i >= 0 && o.c < 90) { score += 3 - i; if (i === 0) first++; } else if (i >= 0) score += 0; }); const sel = base.filter(d => (ans(d, q.id) || []).includes(o.c)).length; return { label: o.t, v: o.c >= 90 ? pct(sel, n) / 33 : score / n, disp: o.c >= 90 ? pct(sel, n) + '%' : fmt(score / n, 2), tip: o.c >= 90 ? `${o.t}: ${sel} of ${n}` : `${o.t}: score ${fmt(score / n, 2)} (3 pts for rank 1, 2 for rank 2, 1 for rank 3); ranked first by ${first}` }; });
     inner = barsHTML(items.filter(i => !/^(Nothing|I have not|Don)/.test(i.label)).sort((x, y) => y.v - x.v), { max: 3 }) + '<div class="legend">Mean rank score per respondent (0–3)</div>';
   } else if (q.type === 'num') {
     const vals = base.map(d => ans(d, q.id)).filter(v => isNum(v) && !(q.dkCode && v === q.dkCode && (q.max == null || v > q.max)));
@@ -695,9 +724,9 @@ function renderDash() {
     <label>Specialty <select id="fSpec"><option value="all">All</option>${Object.entries(SPEC_NAME).map(([k, v]) => `<option value="${k}" ${F.spec === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <label>Institution <select id="fInst"><option value="all">All</option>${Object.entries(INST).map(([k, v]) => `<option value="${k}" ${F.inst === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <label><input type="checkbox" id="fAttn" ${F.attn ? 'checked' : ''}> Exclude failed attention check</label>
-    <label><input type="checkbox" id="fSim" ${F.sim ? 'checked' : ''}> Simulated preview</label>
-    <span style="margin-left:auto">${F.sim ? '<span class="sim">Simulated preview</span>' : '<span class="n">Local browser data</span>'}</span></div>`);
-  if (F.sim) h.push(`<div class="banner warn" style="margin-top:12px"><b>Simulated data.</b> These 80 responses are randomly generated to preview the analysis. They are not stored and are not real answers. Untick “Simulated preview” to see live responses.</div>`);
+    <label><input type="checkbox" id="fSim" ${F.sim ? 'checked' : ''}> Example preview</label>
+    <span style="margin-left:auto">${F.sim ? '<span class="sim">Example preview</span>' : '<span class="n">Collected responses</span>'}</span></div>`);
+  if (F.sim) h.push(`<div class="banner warn" style="margin-top:12px"><b>Example preview.</b> These sample responses are for reviewing the analysis layout only. Untick “Example preview” to see collected responses.</div>`);
 
   h.push(`<div class="dsec" id="sec-field"><header><h2>Fieldwork</h2><p class="muted">Progress against quota and data quality. Quota targets can be edited on the Data tab.</p></header>
     <div class="kpis">
@@ -806,9 +835,10 @@ function aggregateForAI() {
     if (['A0','A3','G4'].includes(q.id)) return;
     const base = docs.filter(d => ans(d, q.id) !== undefined); const n = base.length; if (!n) return;
     let s = { q: q.text, n };
-    if (q.type === 'sc' || q.type === 'scoe') s.pct = Object.fromEntries(q.options.map(o => [o.t, pct(base.filter(d => (q.type === 'scoe' ? ans(d, q.id).v : ans(d, q.id)) === o.c).length, n)]));
-    else if (q.type === 'mc' || q.type === 'mcsc') s.pctSelected = Object.fromEntries(q.options.map(o => [o.t, pct(base.filter(d => (q.type === 'mcsc' ? ans(d, q.id).sel : ans(d, q.id)).includes(o.c)).length, n)]));
-    else if (q.type === 'rank') s.meanScore = Object.fromEntries(q.options.filter(o => o.c < 90).map(o => [o.t, +fmt(base.reduce((t, d) => { const i = ans(d, q.id).indexOf(o.c); return t + (i >= 0 ? 3 - i : 0); }, 0) / n, 2)]));
+    const opts = optionsFor(q);
+    if (q.type === 'sc' || q.type === 'scoe') s.pct = Object.fromEntries(opts.map(o => [o.t, pct(base.filter(d => (q.type === 'scoe' ? ans(d, q.id).v : ans(d, q.id)) === o.c).length, n)]));
+    else if (q.type === 'mc' || q.type === 'mcsc') s.pctSelected = Object.fromEntries(opts.map(o => [o.t, pct(base.filter(d => (q.type === 'mcsc' ? ans(d, q.id).sel : ans(d, q.id)).includes(o.c)).length, n)]));
+    else if (q.type === 'rank') s.meanScore = Object.fromEntries(opts.filter(o => o.c < 90).map(o => [o.t, +fmt(base.reduce((t, d) => { const i = ans(d, q.id).indexOf(o.c); return t + (i >= 0 ? 3 - i : 0); }, 0) / n, 2)]));
     else if (q.type === 'num') { const v = base.map(d => ans(d, q.id)).filter(x => isNum(x) && !(q.dkCode && x === q.dkCode && (q.max == null || x > q.max))); s.median = median(v); s.mean = +fmt(mean(v)); s.dontKnow = n - v.length; }
     else if (q.type === 'gridnum') s.rowMeans = Object.fromEntries(q.rows.map((r, i) => [r, +fmt(mean(base.map(d => ans(d, q.id)[i]).filter(x => isNum(x) && !(x === 98 && (q.max == null || q.max < 98)))))]));
     else if (q.type === 'gridsc') s.rowPct = Object.fromEntries(q.rows.map((r, i) => [r, Object.fromEntries(q.cols.map(c => [c.t, pct(base.filter(d => ans(d, q.id)[i] === c.c).length, base.filter(d => isNum(ans(d, q.id)[i])).length)]))]));
@@ -852,15 +882,17 @@ function simDocs() {
   const out = [];
   for (let k = 0; k < 80; k++) {
     const specCode = pick([1, 2, 3, 3, 4, 4, 5, 5]); const s = SPEC[specCode];
-    const a = { A0: 1, A1: specCode, A2: pick([1, 1, 2, 3, 3, 4, 5]), A4: pick([1, 2, 3, 4, 5, 6]), A5: 2 + Math.floor(rnd() * 5) };
+    const a = { A0: 1, A1: specCode, A2: pick([1, 1, 2, 3, 3, 4, 5, 6]), A4: null, A5: 2 + Math.floor(rnd() * 5) };
+    a.A4 = pick(optionsFor(BY.A4, a).filter(o => o.c !== 97)).c;
     const tilt = { G: [10, 20, 15, 30, 40, 5, 20, 20, 5, 5, 45, 5], E: [60, 70, 55, 65, 50, 35, 55, 50, 30, 25, 45, 35], D: [70, 70, 60, 55, 45, 30, 50, 45, 25, 20, 35, 20], C: [30, 65, 40, 25, 60, 55, 25, 20, 20, 10, 10, 5] }[s];
     SCH.forEach(q => {
       if (q.sec === SECS[0] || !visible(q, a)) return;
-      if (q.type === 'sc') a[q.id] = pick(q.options.filter(o => o.c !== 97)).c;
+      const opts = optionsFor(q, a);
+      if (q.type === 'sc') a[q.id] = pick(opts.filter(o => o.c !== 97)).c;
       else if (q.type === 'scoe') a[q.id] = { v: rnd() < .35 ? 1 : 2, text: rnd() < .35 ? pick(['Heard of batch recall of a generic pen in July', 'Colleague mentioned impurity issue', 'Press report']) : '' };
-      else if (q.type === 'mc') { const o = q.options.filter(x => x.c < 90); a[q.id] = o.filter(() => rnd() < .3).map(x => x.c); if (!a[q.id].length) a[q.id] = [pick(o).c]; if (q.id === 'D12') a[q.id] = o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c).concat([]).slice(0, 5).length ? o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c) : [95]; }
-      else if (q.type === 'mcsc') { const o = q.options.filter(x => x.c < 90); const sel = o.filter(() => rnd() < .35).map(x => x.c); a[q.id] = { sel: sel.length ? sel : [1], top: sel[0] || 1 }; }
-      else if (q.type === 'rank') { const o = q.options.filter(x => x.c < 90).map(x => x.c).sort(() => rnd() - .5); a[q.id] = o.slice(0, 3); }
+      else if (q.type === 'mc') { const o = opts.filter(x => x.c < 90); a[q.id] = o.filter(() => rnd() < .3).map(x => x.c); if (!a[q.id].length) a[q.id] = [pick(o).c]; if (q.id === 'D12') a[q.id] = o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c).concat([]).slice(0, 5).length ? o.filter((x, i) => rnd() < tilt[i] / 160).map(x => x.c) : [95]; }
+      else if (q.type === 'mcsc') { const o = opts.filter(x => x.c < 90); const sel = o.filter(() => rnd() < .35).map(x => x.c); a[q.id] = { sel: sel.length ? sel : [1], top: sel[0] || 1 }; }
+      else if (q.type === 'rank') { const o = opts.filter(x => x.c < 90).map(x => x.c).sort(() => rnd() - .5); a[q.id] = o.slice(0, 3); }
       else if (q.type === 'num') { const hi = q.max ?? 60; a[q.id] = rnd() < .12 && q.dkCode ? q.dkCode : Math.round(rnd() * Math.min(hi, q.id === 'B1' ? 180 : q.id === 'E8' ? 45 : q.id === 'G2' ? 30 : hi)); if (q.id === 'C7') a[q.id] = Math.round(rnd() * 4); }
       else if (q.type === 'gridnum') { const g = {}; q.rows.forEach((_, i) => g[i] = Math.round(rnd() * Math.min(q.max ?? 12, q.max === 100 ? 45 : 10))); if (q.sum100) { const x = Math.round(rnd() * 70); g[0] = x; g[1] = 100 - x - 10; g[2] = 10; } if (q.id === 'C2') { g[0] = Math.round(rnd() * 8); } a[q.id] = g; }
       else if (q.type === 'gridsc') { const g = {}; q.rows.forEach((_, i) => { if (q.id === 'C3') { const r = rnd() * 100; g[i] = r < tilt[i] * .5 ? 1 : r < tilt[i] ? 2 : r < tilt[i] + 20 ? 3 : r < 92 ? 4 : 5; } else if (q.id === 'D4') g[i] = i === 8 ? (rnd() < .95 ? 4 : 2) : pick([1, 1, 2, 2, 3, 4]); else if (q.id === 'D6') g[i] = i === 0 ? pick([1, 1, 1, 3, 98]) : pick([2, 2, 3, 1, 98]); else g[i] = pick(q.cols).c; }); a[q.id] = g; }
@@ -882,7 +914,7 @@ function columns() {
     else if (q.type === 'scoe') cols.push(q.id, q.id + '_text');
     else if (q.type === 'mcsc') cols.push(q.id, q.id + '_top');
     else { cols.push(q.id); if (q.recFlag) cols.push(q.id + '_rec'); }
-    if (q.options && q.options.some(o => o.c === 97)) cols.push(q.id + '_other');
+    if (optionsFor(q).some(o => o.c === 97)) cols.push(q.id + '_other');
   });
   cols.push('G5_contact');
   return cols;
@@ -896,7 +928,7 @@ function flatten(d) {
     else if (q.type === 'mcsc') { r[q.id] = v ? (v.sel || []).join('|') : ''; r[q.id + '_top'] = v ? v.top ?? '' : ''; }
     else if (q.type === 'mc' || q.type === 'rank') r[q.id] = v ? v.join('|') : '';
     else { r[q.id] = v ?? ''; if (q.recFlag) r[q.id + '_rec'] = a[q.id + '_rec'] ? 1 : ''; }
-    if (q.options && q.options.some(o => o.c === 97)) r[q.id + '_other'] = a[q.id + '_other'] || '';
+    if (optionsFor(q, a).some(o => o.c === 97)) r[q.id + '_other'] = a[q.id + '_other'] || '';
   });
   r.G5_contact = a.G5_contact || '';
   return r;
@@ -931,21 +963,20 @@ function renderData() {
   const targets = store.get('sem_targets') || { G: 25, E: 25, D: 25, C: 25 };
   const comp = realDocs.filter(d => d.status === 'complete').length;
   dataV.innerHTML = `
-    <div class="card stack"><h2>Response store</h2>
-      <p><b>${realDocs.length}</b> records saved in this browser (${comp} complete, ${realDocs.length - comp} screened out or other).</p>
-      <p class="muted">This Cloudflare-ready static build stores responses in local browser storage. For live multi-respondent fieldwork, place it behind Cloudflare Access and export CSVs from each collection device, or connect a server-side form endpoint later.</p></div>
+    <div class="card stack"><h2>Responses</h2>
+      <p><b>${realDocs.length}</b> records available (${comp} complete, ${realDocs.length - comp} screened out or other).</p>
+      <p class="muted">Use this area to review and prepare response files for analysis.</p></div>
     <div class="card stack"><h2>Export</h2>
       <p class="muted">One row per response, one column per answer. Multiple choices and rankings are coded like <code>1|4|7</code>; grids use <code>C3_r1</code>, <code>C3_r2</code> and so on; codes follow the questionnaire workbook.</p>
       <div class="row"><button class="btn primary" id="expBtn" ${realDocs.length ? '' : 'disabled'}>Download responses (CSV)</button><button class="btn" id="tplBtn">Download blank template (CSV)</button></div></div>
-    <div class="card stack"><h2>Import responses collected elsewhere</h2>
-      <p class="muted">Use this when fieldwork runs on another survey platform. Map that platform’s export to the blank template columns, then upload. Imported rows are marked <code>source = import</code> and appear in the dashboard immediately.</p>
-      <div class="row"><input type="file" id="impFile" accept=".csv,text/csv"><button class="btn" id="impBtn">Import</button><button class="btn" id="clearBtn" ${realDocs.length ? '' : 'disabled'}>Clear local records</button></div>
+    <div class="card stack"><h2>Import responses</h2>
+      <p class="muted">Upload a response file that follows the survey template. Imported rows appear in the dashboard immediately.</p>
+      <div class="row"><input type="file" id="impFile" accept=".csv,text/csv"><button class="btn" id="impBtn">Import</button><button class="btn" id="clearBtn" ${realDocs.length ? '' : 'disabled'}>Clear responses</button></div>
       ${importMsg ? `<div class="banner ${/fail|error|No /i.test(importMsg) ? 'crit' : 'good'}">${esc(importMsg)}</div>` : ''}</div>
-    <div class="card stack"><h2>Quota targets</h2><p class="muted">Used by the fieldwork chart. Saved in this browser only.</p>
+    <div class="card stack"><h2>Quota targets</h2><p class="muted">Used by the fieldwork chart.</p>
       <div class="row">${['G','E','D','C'].map(s => `<label class="chk" style="color:var(--ink)">${SPEC_NAME[s]} <input class="num" style="width:80px" type="number" min="1" id="tgt-${s}" value="${targets[s]}"></label>`).join('')}</div></div>
     <div class="card stack"><h2>Before fieldwork</h2>
       <ul style="margin:0;padding-left:20px;display:grid;gap:6px">
-        <li>Deploy behind Cloudflare Access or another authentication layer if respondents should be restricted.</li>
         <li>Obtain institutional permissions and ethics review as each institute requires.</li>
         <li>Pilot with 2-3 respondents per specialty, check timing on the dashboard, then clear pilot rows before analysis.</li>
       </ul></div>`;
@@ -962,7 +993,7 @@ async function dl(filename, data) {
     const a = document.createElement('a');
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
-  } catch (e) { importMsg = 'Download failed in this browser.'; renderData(); }
+  } catch (e) { importMsg = 'Download failed.'; renderData(); }
 }
 async function doImport() {
   const f = dataV.querySelector('#impFile').files[0];
