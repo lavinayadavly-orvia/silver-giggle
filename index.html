@@ -117,6 +117,7 @@ p{margin:0}
 textarea.txt{min-height:140px;resize:vertical}
 .num{width:140px;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86);font-variant-numeric:tabular-nums}
 .chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.zero-confirm{border:1px solid #f7a64b;background:#fff5e8;color:var(--ink);border-radius:8px;padding:12px 14px;align-items:flex-start}
 .grid-q{display:grid;gap:8px}
 .grow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--rule)}
 .grow:last-child{border-bottom:0}
@@ -228,6 +229,22 @@ function optionsFor(q, a = {}) {
 }
 const isNum = v => typeof v === 'number' && !isNaN(v);
 const pos = v => isNum(v) && v > 0 && v < 90;
+function zeroConfirmState(q, g = {}) {
+  if (!q.sum100) return null;
+  const full = q.rows.findIndex((_, i) => g[i] === 100);
+  if (full < 0) return null;
+  const hasBlankOther = q.rows.some((_, i) => i !== full && !isNum(g[i]));
+  const hasNonZeroOther = q.rows.some((_, i) => i !== full && isNum(g[i]) && g[i] !== 0);
+  return hasBlankOther && !hasNonZeroOther ? { full } : null;
+}
+function fillZeroRemainder(q, a) {
+  const g = { ...(a[q.id] || {}) };
+  const state = zeroConfirmState(q, g);
+  if (!state) return false;
+  q.rows.forEach((_, i) => { if (i !== state.full && !isNum(g[i])) g[i] = 0; });
+  a[q.id] = g;
+  return true;
+}
 const SHOW = {
   C2: a => a.C1 === 1, C7: a => a.C1 === 1, C8: a => pos(a.C7),
   D1: a => { const g = a.C2 || {}; return pos(g[0]) || pos(g[1]); },
@@ -409,6 +426,7 @@ function qHTML(q, a, err) {
     const g = v || {};
     body = `<div class="grid-q">${q.rows.map((r, i) => { const dk = g[i] === 98 && (q.max == null || q.max < 98); return `<div class="grow"><span>${esc(r)}</span><span class="row"><input class="num" type="number" inputmode="numeric" data-gnum="${q.id}" data-i="${i}" min="0" ${q.max != null ? `max="${q.max}"` : ''} value="${isNum(g[i]) && !dk ? g[i] : ''}" ${dk ? 'disabled' : ''} aria-label="${esc(r)}">${q.dk ? `<label class="chk"><input type="checkbox" data-gdk="${q.id}" data-i="${i}" ${dk ? 'checked' : ''}> Don’t know</label>` : ''}</span></div>`; }).join('')}</div>`;
     if (q.sum100) { const s = q.rows.reduce((t, _, i) => t + (isNum(g[i]) && g[i] !== 98 ? g[i] : 0), 0); body += `<div class="qhelp">Total: <b id="sum-${q.id}">${s}%</b></div>`; }
+    if (zeroConfirmState(q, g)) body += `<label class="chk zero-confirm"><input type="checkbox" data-zero-confirm="${q.id}"> Do you confirm the other options are 0?</label>`;
     if (q.flag) body += `<label class="chk"><input type="checkbox" data-flag="${q.id}" ${a[q.id + '_fewer'] ? 'checked' : ''}> Fewer than 10 such women</label>${a[q.id + '_fewer'] ? ` <input class="num" type="number" data-seen="${q.id}" min="1" max="9" placeholder="Number seen" value="${esc(a[q.id + '_seen'])}">` : ''}`;
   } else if (q.type === 'gridsc') {
     const g = v || {};
@@ -452,8 +470,14 @@ function bindQ(qs) {
   root.querySelectorAll('[data-num]').forEach(el => el.oninput = () => { const id = el.dataset.num; a[id] = el.value === '' ? undefined : Number(el.value); save(); if (['C1','C7','G1'].includes(id)) {} });
   root.querySelectorAll('[data-dk]').forEach(el => el.onchange = () => { const q = BY[el.dataset.dk]; a[q.id] = el.checked ? q.dkCode : undefined; rerender(); });
   root.querySelectorAll('[data-rec]').forEach(el => el.onchange = () => { a[el.dataset.rec + '_rec'] = el.checked; save(); });
-  root.querySelectorAll('[data-gnum]').forEach(el => el.oninput = () => { const id = el.dataset.gnum; const g = { ...(a[id] || {}) }; if (el.value === '') delete g[el.dataset.i]; else g[el.dataset.i] = Number(el.value); a[id] = g; save(); });
-  root.querySelectorAll('[data-gnum]').forEach(el => el.addEventListener('input', () => { const q = BY[el.dataset.gnum]; if (!q.sum100) return; const g = a[q.id] || {}; const t = q.rows.reduce((x, _, i) => x + (isNum(g[i]) && g[i] !== 98 ? g[i] : 0), 0); const out = document.getElementById('sum-' + q.id); if (out) out.textContent = t + '%'; }));
+  root.querySelectorAll('[data-gnum]').forEach(el => el.oninput = () => {
+    const id = el.dataset.gnum; const q = BY[id]; const g = { ...(a[id] || {}) };
+    if (el.value === '') delete g[el.dataset.i]; else g[el.dataset.i] = Number(el.value);
+    a[id] = g; save();
+    if (q.sum100 && zeroConfirmState(q, g)) rerender();
+    else if (q.sum100) { const t = q.rows.reduce((x, _, i) => x + (isNum(g[i]) && g[i] !== 98 ? g[i] : 0), 0); const out = document.getElementById('sum-' + q.id); if (out) out.textContent = t + '%'; }
+  });
+  root.querySelectorAll('[data-zero-confirm]').forEach(el => el.onchange = () => { const q = BY[el.dataset.zeroConfirm]; if (el.checked && fillZeroRemainder(q, a)) rerender(); });
   root.querySelectorAll('[data-gdk]').forEach(el => el.onchange = () => { const id = el.dataset.gdk; const g = { ...(a[id] || {}) }; if (el.checked) g[el.dataset.i] = 98; else delete g[el.dataset.i]; a[id] = g; rerender(); });
   root.querySelectorAll('[data-flag]').forEach(el => el.onchange = () => { a[el.dataset.flag + '_fewer'] = el.checked; rerender(); });
   root.querySelectorAll('[data-seen]').forEach(el => el.oninput = () => { a[el.dataset.seen + '_seen'] = el.value === '' ? undefined : Number(el.value); save(); });
@@ -483,6 +507,7 @@ function validate(q, a) {
   }
   if (q.type === 'gridnum') {
     const g = v || {};
+    if (zeroConfirmState(q, g)) return 'Please confirm the other options are 0.';
     for (let i = 0; i < q.rows.length; i++) {
       const x = g[i];
       if (!isNum(x)) return 'Please answer every row' + (q.dk ? ' (or tick Don’t know).' : '.');
