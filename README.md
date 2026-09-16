@@ -23,3 +23,4 @@ Publish the `dist` directory. The project is ready for Cloudflare Pages with:
 - Optional access control: Cloudflare Access in front of the Pages project
 
 Responses are stored in the browser's local storage and can be exported as CSV from the Data tab. For distributed fieldwork, collect behind an authenticated route and export/import CSVs, or connect a server-side endpoint later.
+# silver-giggle
