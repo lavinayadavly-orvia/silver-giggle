@@ -38,7 +38,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand{font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:-.01em}
 .brand small{display:block;font-family:var(--sans);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
 .tabs{display:none;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
-body[data-mode="dash"] .tabs, body[data-mode="data"] .tabs{display:flex}
+body[data-admin="true"] .tabs{display:flex}
 .tab{border:0;background:transparent;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .wrap{max-width:1180px;margin:0 auto;padding-top:42px}
@@ -64,6 +64,9 @@ p{margin:0}
 .pill{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 11px;color:var(--muted);font-size:13px;font-weight:600}
 .console-link{margin-left:auto;border:0;background:transparent;color:var(--faint);font-size:13px;font-weight:600;cursor:pointer;padding:8px}
 .console-link:hover{color:var(--accent)}
+.admin-login{max-width:460px;margin:0 auto}
+.admin-login input{width:100%;border:1px solid var(--rule);border-radius:7px;padding:9px 11px;background:var(--surface)}
+.admin-note{font-size:13px;color:var(--muted)}
 .stack{display:grid;gap:14px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .btn{border:1px solid var(--rule);background:var(--card);padding:8px 16px;border-radius:7px;cursor:pointer;font-weight:600}
@@ -157,7 +160,7 @@ details.all .card{background:var(--surface)}
 
 <div class="top"><div class="top-in">
   <div class="brand">Silver Giggle<small>Specialist research survey</small></div>
-  <button class="console-link" type="button" data-view="dash">Study team</button>
+  <button class="console-link" type="button" data-view="dash">Admin login</button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-survey" aria-selected="true" data-view="survey">Survey</button>
     <button class="tab" role="tab" id="tab-dash" aria-selected="false" data-view="dash">Dashboard</button>
@@ -205,7 +208,11 @@ const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catc
 
 /* ---------------- static runtime ---------------- */
 const RESP_KEY = 'sem_responses_v2';
+const ADMIN_KEY = 'sem_admin_ok';
+const ADMIN_PASSCODE = 'silver-admin';
 let realDocs = store.get(RESP_KEY) || [];
+let adminAuthed = store.get(ADMIN_KEY) === true;
+document.body.dataset.admin = adminAuthed ? 'true' : 'false';
 function persistDocs() { store.set(RESP_KEY, realDocs); }
 function addDoc(doc) {
   const id = 'resp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
@@ -224,8 +231,29 @@ function show(v) {
   document.body.dataset.mode = v;
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v));
   ['survey','dash','data'].forEach(k => document.getElementById('view-' + k).hidden = k !== v);
-  if (v === 'dash') renderDash(); if (v === 'data') renderData();
+  if ((v === 'dash' || v === 'data') && !adminAuthed) renderAdminLogin(v);
+  else { if (v === 'dash') renderDash(); if (v === 'data') renderData(); }
   store.set('sem_tab', v); window.scrollTo(0, 0);
+}
+function renderAdminLogin(target) {
+  const root = target === 'data' ? dataV : dv;
+  root.innerHTML = `<div class="card stack admin-login">
+    <span class="secname">Admin login</span>
+    <h1>Study team access</h1>
+    <p class="muted">Dashboard and Data are for admin users only. Doctors using the survey link will not see these tabs.</p>
+    <label class="stack"><span class="admin-note">Passcode</span><input id="adminPass" type="password" autocomplete="current-password" placeholder="Enter admin passcode"></label>
+    <div class="row"><button class="btn primary" id="adminBtn">Log in</button><button class="btn" id="adminBack">Back to survey</button></div>
+    <div id="adminErr" class="qerr" hidden>Incorrect passcode.</div>
+    <p class="admin-note">For production, keep the admin URL behind Cloudflare Access as the real authentication layer.</p>
+  </div>`;
+  root.querySelector('#adminBtn').onclick = () => {
+    if (root.querySelector('#adminPass').value === ADMIN_PASSCODE) {
+      adminAuthed = true; store.set(ADMIN_KEY, true); document.body.dataset.admin = 'true';
+      show(target);
+    } else root.querySelector('#adminErr').hidden = false;
+  };
+  root.querySelector('#adminPass').onkeydown = e => { if (e.key === 'Enter') root.querySelector('#adminBtn').click(); };
+  root.querySelector('#adminBack').onclick = () => show('survey');
 }
 
 /* ---------------- survey ---------------- */
@@ -238,7 +266,7 @@ function renderSurvey(errors) {
     sv.innerHTML = `<div class="card intro">
       <div class="intro-grid"><div class="stack">
         <span class="secname">Clinical research survey</span>
-        <h1>Silver Giggle</h1>
+        <h1>Welcome</h1>
         <p class="intro-copy">A focused specialist survey on how GLP-1 therapies are used across patient types, product choices, and referral pathways in clinical practice.</p>
         <div class="pill-row"><span class="pill">15-20 minutes</span><span class="pill">Anonymous analysis</span><span class="pill">No product promotion</span></div>
         <p class="muted">Your draft is saved on this device until you submit. You may skip any question or stop at any time.</p>
@@ -256,7 +284,8 @@ function renderSurvey(errors) {
     return;
   }
   if (S.page === 'done') {
-    sv.innerHTML = `<div class="card stack"><span class="secname">${S.doneKind === 'screen' ? 'Thank you' : 'Submitted'}</span><h1>${S.doneKind === 'screen' ? 'Thank you for your time' : 'Thank you, your response is recorded'}</h1><p class="muted">${S.doneKind === 'screen' ? 'This survey is for practising specialists in the four specialties at government and academic institutes. Based on your answers, the remaining questions do not apply.' : 'Your answers have been saved. You can close this page.'}</p>${S.saveMsg ? `<div class="banner ${S.saveOk ? 'good' : 'crit'}">${esc(S.saveMsg)}</div>` : ''}<div class="row"><button class="btn" id="newBtn">Record another response</button></div></div>`;
+    sv.innerHTML = `<div class="card stack"><span class="secname">${S.doneKind === 'screen' ? 'Thank you' : 'Submitted'}</span><h1>${S.doneKind === 'screen' ? 'Thank you for your time' : 'Thank you, your response is recorded'}</h1><p class="muted">${S.doneKind === 'screen' ? 'This survey is for practising specialists in the four specialties at government and academic institutes. Based on your answers, the remaining questions do not apply.' : 'Your answers have been saved. You can close this page.'}</p>${S.saveMsg ? `<div class="banner ${S.saveOk ? 'good' : 'crit'}">${esc(S.saveMsg)}</div>` : ''}<div class="row">${S.lastDoc ? '<button class="btn primary" id="pdfBtn">Download PDF of my responses</button>' : ''}<button class="btn" id="newBtn">Record another response</button></div></div>`;
+    const p = sv.querySelector('#pdfBtn'); if (p) p.onclick = () => downloadResponsePdf(S.lastDoc);
     sv.querySelector('#newBtn').onclick = () => { S = { answers:{}, page:-1, startedAt:null }; save(); renderSurvey(); };
     return;
   }
@@ -401,15 +430,118 @@ async function finish(status, reason) {
     answers: status === 'complete' ? a : { A0: a.A0, A1: a.A1, A2: a.A2, A5: a.A5 }
   };
   S.page = 'done'; S.doneKind = status === 'complete' ? 'full' : 'screen';
+  S.lastDoc = doc;
   try {
     addDoc(doc);
     S.saveOk = true;
-    S.saveMsg = 'Saved in this browser. Export responses from the Data tab before clearing browser storage or changing devices.';
+    S.saveMsg = 'Saved. You can download a PDF copy of your responses below.';
     S.answers = {};
     S.startedAt = null;
   }
   catch (e) { S.saveOk = false; S.saveMsg = 'Saving failed in this browser. Your answers are kept as a draft on this device.'; }
   save(); renderSurvey();
+}
+
+function optionText(options, code) {
+  const opt = (options || []).find(o => o.c === code);
+  return opt ? opt.t : String(code ?? '');
+}
+function answerText(q, a) {
+  const v = a[q.id];
+  if (v === undefined || v === null || v === '') return '';
+  let out = '';
+  if (q.type === 'sc') out = optionText(q.options, v);
+  else if (q.type === 'scoe') out = optionText(q.options, v.v) + (v.text ? ` - ${v.text}` : '');
+  else if (q.type === 'mc') out = (v || []).map(c => optionText(q.options, c)).join('; ');
+  else if (q.type === 'mcsc') {
+    const selected = (v.sel || []).map(c => optionText(q.options, c)).join('; ');
+    out = selected + (v.top ? ` | Most common: ${optionText(q.options, v.top)}` : '');
+  }
+  else if (q.type === 'rank') out = (v || []).map((c, i) => `${i + 1}. ${optionText(q.options, c)}`).join('; ');
+  else if (q.type === 'num') {
+    const dk = q.dkCode && v === q.dkCode && (q.max == null || v > q.max);
+    out = dk ? q.dkLabel : String(v);
+    if (q.recFlag && a[q.id + '_rec']) out += ' (from records)';
+  }
+  else if (q.type === 'gridnum') out = q.rows.map((r, i) => `${r}: ${(v || {})[i] ?? ''}`).filter(x => !x.endsWith(': ')).join('; ');
+  else if (q.type === 'gridsc') out = q.rows.map((r, i) => {
+    const c = (v || {})[i];
+    return isNum(c) ? `${r}: ${optionText(q.cols, c)}` : '';
+  }).filter(Boolean).join('; ');
+  else if (q.type === 'oe') out = String(v || '');
+  if (a[q.id + '_other']) out += `${out ? ' | ' : ''}Other: ${a[q.id + '_other']}`;
+  if (q.id === 'G5' && a.G5_contact) out += `${out ? ' | ' : ''}Contact: ${a.G5_contact}`;
+  return out;
+}
+function pdfSafe(s) {
+  return String(s ?? '')
+    .normalize('NFKD')
+    .replace(/[^\x20-\x7E]/g, ch => ({'–':'-','—':'-','≥':'>=','≤':'<=','²':'2','’':"'",'“':'"','”':'"'}[ch] || ' '))
+    .replace(/[\\()]/g, '\\$&');
+}
+function wrapLine(text, max = 88) {
+  const words = String(text).split(/\s+/), lines = [];
+  let line = '';
+  words.forEach(w => {
+    if ((line + ' ' + w).trim().length > max) { if (line) lines.push(line); line = w; }
+    else line = (line + ' ' + w).trim();
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+function buildResponsePdf(doc) {
+  const a = doc.answers || {};
+  const lines = [
+    'Silver Giggle',
+    'Response copy',
+    `Submitted: ${doc.submittedAt ? new Date(doc.submittedAt).toLocaleString('en-IN') : ''}`,
+    `Status: ${doc.status}${doc.reason ? ` (${doc.reason})` : ''}`,
+    ''
+  ];
+  SCH.forEach(q => {
+    const ansText = answerText(q, a);
+    if (!ansText) return;
+    lines.push(`${q.id}. ${q.text}`);
+    wrapLine(ansText, 94).forEach(l => lines.push(`  ${l}`));
+    lines.push('');
+  });
+  const pages = [];
+  for (let i = 0; i < lines.length; i += 46) pages.push(lines.slice(i, i + 46));
+  const objects = [];
+  const add = body => { objects.push(body); return objects.length; };
+  const catalogId = add('');
+  const pagesId = add('');
+  const fontId = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const pageIds = [];
+  pages.forEach(pageLines => {
+    const content = `BT /F1 10 Tf 48 760 Td 14 TL ${pageLines.map(l => `(${pdfSafe(l)}) Tj T*`).join(' ')} ET`;
+    const contentId = add(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+    const pageId = add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`);
+    pageIds.push(pageId);
+  });
+  objects[catalogId - 1] = `<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
+  objects[pagesId - 1] = `<< /Type /Pages /Kids [${pageIds.map(id => `${id} 0 R`).join(' ')}] /Count ${pageIds.length} >>`;
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((body, i) => {
+    offsets.push(pdf.length);
+    pdf += `${i + 1} 0 obj\n${body}\nendobj\n`;
+  });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach(o => { pdf += `${String(o).padStart(10, '0')} 00000 n \n`; });
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return pdf;
+}
+function downloadResponsePdf(doc) {
+  const pdf = buildResponsePdf(doc);
+  const blob = new Blob([pdf], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `silver-giggle-response-${(doc.submittedAt || new Date().toISOString()).slice(0, 10)}.pdf`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
 }
 
 /* ---------------- dashboard ---------------- */
