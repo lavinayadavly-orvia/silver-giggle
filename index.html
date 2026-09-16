@@ -31,8 +31,8 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:
-  linear-gradient(180deg, rgba(38,107,95,.09), transparent 420px),
-  linear-gradient(90deg, rgba(37,106,191,.07), transparent 44%),
+  linear-gradient(180deg, rgba(38,107,95,.08), transparent 420px),
+  repeating-linear-gradient(135deg, rgba(38,107,95,.035) 0 1px, transparent 1px 44px),
   var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -81,32 +81,44 @@ p{margin:0}
 .progress{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
 .progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
 .secname{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.q-shell{max-width:760px;margin:0 auto}
-.q-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
-.q{padding:8px 0 12px;display:grid;gap:12px}
+.card.q-shell{max-width:1080px;margin:0 auto;padding:0;display:grid;grid-template-columns:310px minmax(0,1fr);overflow:hidden;background:#fdfaf6;border-color:#eadfd5;box-shadow:0 24px 70px rgba(44,38,31,.11)}
+.journey-pane{background:var(--card);padding:34px 28px;border-right:1px solid #eadfd5;display:grid;align-content:start;gap:26px}
+.journey-kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.journey-title{font-family:var(--serif);font-size:30px;line-height:1.05;color:var(--ink)}
+.steps{display:grid;gap:0;position:relative}
+.step{display:grid;grid-template-columns:30px 1fr;gap:12px;position:relative;padding-bottom:20px;color:var(--muted)}
+.step:before{content:"";position:absolute;left:14px;top:30px;bottom:0;border-left:1px solid #eadfd5}
+.step:last-child{padding-bottom:0}.step:last-child:before{display:none}
+.step-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid #eadfd5;background:var(--card);font-size:12px;font-weight:700;color:var(--faint);z-index:1}
+.step.done .step-dot,.step.active .step-dot{background:#f7a64b;border-color:#f7a64b;color:#3b2612}
+.step.active{color:var(--ink)}
+.step b{display:block;font-size:14px;line-height:1.2}.step span{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.question-pane{padding:34px;display:grid;gap:22px;align-content:start;background:linear-gradient(135deg,#fffaf2,#f6faf7)}
+.q-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.q{padding:0;display:grid;gap:16px}
 .q:first-of-type{border-top:0}
 .qid{font-size:12px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums}
-.qtext{font-weight:700;font-size:22px;line-height:1.25;text-wrap:balance}
+.qtext{font-family:var(--serif);font-weight:700;font-size:32px;line-height:1.12;text-wrap:balance;color:#2b221c}
 .qhelp{font-size:13px;color:var(--muted)}
 .qerr{font-size:13px;color:var(--crit);font-weight:600}
-.opts{display:grid;gap:6px}
-.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--rule);border-radius:7px;padding:8px 12px;cursor:pointer;background:var(--surface)}
-.opt:hover{border-color:var(--accent)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid #eadfd5;border-radius:8px;padding:16px;cursor:pointer;background:rgba(255,255,255,.82);min-height:76px;box-shadow:0 10px 26px rgba(44,38,31,.05)}
+.opt:hover{border-color:#f7a64b;transform:translateY(-1px)}
 .opt input{margin-top:4px;accent-color:var(--accent)}
-.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel{border-color:#f7a64b;background:#fff5e8;box-shadow:0 14px 30px rgba(247,166,75,.14)}
 .opt .rk{min-width:22px;height:22px;border-radius:11px;border:1px solid var(--rule);display:inline-grid;place-items:center;font-size:12px;font-weight:700}
 .opt.sel .rk{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.txt{width:100%;border:1px solid var(--rule);border-radius:6px;padding:7px 10px;background:var(--surface)}
-.num{width:120px;border:1px solid var(--rule);border-radius:6px;padding:7px 10px;background:var(--surface);font-variant-numeric:tabular-nums}
+.txt{width:100%;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86)}
+.num{width:140px;border:1px solid #eadfd5;border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.86);font-variant-numeric:tabular-nums}
 .chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
 .grid-q{display:grid;gap:8px}
 .grow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--rule)}
 .grow:last-child{border-bottom:0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--rule);border-radius:16px;padding:4px 11px;font-size:13px;cursor:pointer;background:var(--surface)}
-.chip.sel{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip{border:1px solid #eadfd5;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.82)}
+.chip.sel{background:#f7a64b;border-color:#f7a64b;color:#3b2612}
 .gsc{grid-template-columns:1fr}
-.nav{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:2px}
 /* dashboard */
 .filters{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;border-bottom:1px solid var(--rule)}
 .filters label{font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
@@ -156,7 +168,8 @@ details.all .card{background:var(--surface)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:10px}
 .bar.ev{grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 118px}
-@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.qtext{font-size:19px}.q-head{display:grid} }
+@media (max-width:860px){ .card.q-shell{grid-template-columns:1fr}.journey-pane{border-right:0;border-bottom:1px solid #eadfd5;padding:20px;gap:14px}.journey-title{font-size:24px}.journey-pane .muted{display:none}.steps{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}.step{display:flex;align-items:center;min-width:max-content;padding:0}.step:before,.step span{display:none}.step-dot{width:24px;height:24px;flex:0 0 auto}.step b{font-size:12px;white-space:nowrap}.question-pane{padding:24px} }
+@media (max-width:720px){ .intro-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.qtext{font-size:24px}.q-head{display:grid}.opts{grid-template-columns:1fr} }
 @media (max-width:620px){ .bar.ev{grid-template-columns:minmax(0,1fr) 110px} .bar.ev .lab{grid-column:1/-1} .filters{position:static} .bar{grid-template-columns:minmax(0,1fr) 80px 40px} .grow{grid-template-columns:1fr} .tabs{margin-left:0} .filters{top:calc(env(safe-area-inset-top,0px) + 96px)} }
 @media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
 </style>
@@ -264,6 +277,14 @@ function renderAdminLogin(target) {
 let S = store.get('sem_draft') || { answers: {}, page: -1, startedAt: null };
 const sv = document.getElementById('view-survey');
 function pagesFor(a) { return SCH.filter(q => visible(q, a)); }
+function surveyStepsHTML(q) {
+  const activeIndex = SECS.indexOf(q.sec);
+  return `<div class="steps">${SECS.map((sec, i) => {
+    const name = sec.replace(/^[A-Z]\. /, '');
+    const klass = i < activeIndex ? 'done' : (i === activeIndex ? 'active' : '');
+    return `<div class="step ${klass}"><span class="step-dot">${i < activeIndex ? '✓' : i + 1}</span><p><b>${esc(name)}</b><span>${i === activeIndex ? 'Current section' : (i < activeIndex ? 'Completed' : 'Ahead')}</span></p></div>`;
+  }).join('')}</div>`;
+}
 function renderSurvey(errors) {
   const a = S.answers;
   if (S.page === -1) {
@@ -300,9 +321,17 @@ function renderSurvey(errors) {
   const pct = Math.round(100 * (S.page) / Math.max(pages.length, 1));
   const actionLabel = q.id === 'G5' ? 'Submit' : 'Continue';
   sv.innerHTML = `<div class="progress" aria-label="Progress"><i style="width:${pct}%"></i></div>
-    <div class="card q-shell"><div class="q-head"><span class="secname">${esc(q.sec.replace(/^[A-Z]\. /, ''))}</span><span class="n">Question ${S.page + 1}</span></div>
-    <div id="qs">${qs.map(q => qHTML(q, a, errors && errors[q.id])).join('')}</div>
-    <div class="nav"><button class="btn" id="backBtn" ${S.page === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" id="nextBtn">${actionLabel}</button></div></div>`;
+    <div class="card q-shell">
+      <aside class="journey-pane">
+        <div class="stack"><span class="journey-kicker">Silver Giggle</span><div class="journey-title">Take care of the research details</div><p class="muted">Move through each section at your pace. Your draft stays on this device until submission.</p></div>
+        ${surveyStepsHTML(q)}
+      </aside>
+      <section class="question-pane">
+        <div class="q-head"><span class="secname">${esc(q.sec.replace(/^[A-Z]\. /, ''))}</span><span class="n">Question ${S.page + 1}</span></div>
+        <div id="qs">${qs.map(q => qHTML(q, a, errors && errors[q.id])).join('')}</div>
+        <div class="nav"><button class="btn" id="backBtn" ${S.page === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" id="nextBtn">${actionLabel}</button></div>
+      </section>
+    </div>`;
   bindQ(qs);
   sv.querySelector('#backBtn').onclick = () => {
     const pagesNow = pagesFor(S.answers);
