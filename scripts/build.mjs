@@ -1,4 +1,4 @@
-import { mkdir, copyFile, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdir, copyFile, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { Script } from 'node:vm';
 
 const html = await readFile('index.html', 'utf8');
@@ -11,5 +11,9 @@ await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await copyFile('index.html', 'dist/index.html');
 await copyFile('public/_headers', 'dist/_headers');
+await mkdir('dist/assets', { recursive: true });
+for (const file of await readdir('public/assets')) {
+  await copyFile(`public/assets/${file}`, `dist/assets/${file}`);
+}
 await writeFile('dist/_redirects', '/* /index.html 200\n');
 console.log('Cloudflare Pages build ready: dist');

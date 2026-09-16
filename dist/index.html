@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Silver Giggle</title>
+<link rel="icon" href="assets/silver-giggle-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/silver-giggle-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <style>
@@ -36,8 +38,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(247,248,246,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:12px 16px}
 .top-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
-.brand{font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:-.01em}
-.brand small{display:block;font-family:var(--sans);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
+.brand{display:inline-flex;align-items:center;text-decoration:none}
+.brand img{display:block;width:174px;height:auto;border-radius:6px}
 .tabs{display:none;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
 body[data-admin="true"] .tabs{display:flex}
 .tab{border:0;background:transparent;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
@@ -160,7 +162,7 @@ details.all .card{background:var(--surface)}
 <body>
 
 <div class="top"><div class="top-in">
-  <div class="brand">Silver Giggle<small>Specialist research survey</small></div>
+  <a class="brand" href="index.html" aria-label="Silver Giggle home"><img src="assets/silver-giggle-logo-horizontal-on-navy.svg" alt="Silver Giggle"></a>
   <button class="console-link" type="button" data-view="dash">Admin login</button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-survey" aria-selected="true" data-view="survey">Survey</button>
