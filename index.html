@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <style>
 :root{
-  --bg:#f4f5f4; --surface:#fcfcfb; --card:#ffffff; --ink:#1b2024; --muted:#5b6268; --faint:#8a9095; --rule:#e2e5e6;
-  --accent:#256abf; --accent-ink:#ffffff; --accent-soft:#e6eef9;
+  --bg:#f7f8f6; --surface:#fcfcfb; --card:#ffffff; --ink:#1b2024; --muted:#5b6268; --faint:#8a9095; --rule:#e2e5e6;
+  --accent:#266b5f; --accent-ink:#ffffff; --accent-soft:#e7f1ee; --blue:#256abf; --blue-soft:#e6eef9;
   --s100:#cde2fb; --s200:#9ec5f4; --s300:#6da7ec; --s400:#3987e5; --s500:#256abf; --s600:#184f95; --s700:#0d366b;
   --dk:#d9dcdd; --good:#0ca30c; --warn:#b77900; --crit:#d03b3b; --crit-soft:#fbe7e7; --warn-soft:#fdf3dc; --good-soft:#e3f4e3;
   --serif:"Source Serif 4",Georgia,serif; --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -28,18 +28,20 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:
-  linear-gradient(180deg, rgba(37,106,191,.08), transparent 340px),
+  linear-gradient(180deg, rgba(38,107,95,.09), transparent 420px),
+  linear-gradient(90deg, rgba(37,106,191,.07), transparent 44%),
   var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:10px 16px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(247,248,246,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:12px 16px}
 .top-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
-.brand{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand{font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:-.01em}
 .brand small{display:block;font-family:var(--sans);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
-.tabs{display:flex;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
+.tabs{display:none;gap:4px;margin-left:auto;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:3px}
+body[data-mode="dash"] .tabs, body[data-mode="data"] .tabs{display:flex}
 .tab{border:0;background:transparent;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
-.wrap{max-width:1180px;margin:0 auto;padding-top:24px}
+.wrap{max-width:1180px;margin:0 auto;padding-top:42px}
 .narrow{max-width:780px;margin:0 auto}
 h1,h2,h3{margin:0;text-wrap:balance}
 h1{font-family:var(--serif);font-size:26px;line-height:1.2}
@@ -48,13 +50,20 @@ h3{font-size:15px;font-weight:600}
 p{margin:0}
 .muted{color:var(--muted)} .faint{color:var(--faint)}
 .card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:18px}
-.intro{display:grid;gap:18px;padding:26px}
-.intro-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(240px,.8fr);gap:18px;align-items:stretch}
-.intro-panel{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:16px;display:grid;gap:12px}
-.metric-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.mini-metric{border-left:3px solid var(--accent);padding-left:10px}
-.mini-metric b{display:block;font-family:var(--serif);font-size:22px;line-height:1.1}
-.mini-metric span{display:block;color:var(--muted);font-size:12px}
+.intro{display:grid;gap:22px;padding:34px}
+.intro-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:30px;align-items:center}
+.intro h1{font-size:44px;line-height:1.04}
+.intro-copy{font-size:18px;line-height:1.55;max-width:620px}
+.intro-panel{border:1px solid var(--rule);background:linear-gradient(180deg,var(--surface),#f3f7f5);border-radius:8px;padding:20px;display:grid;gap:14px}
+.trust-list{display:grid;gap:12px}
+.trust-item{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.trust-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700}
+.trust-item b{display:block}
+.trust-item span{display:block;color:var(--muted);font-size:13px}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px}
+.pill{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 11px;color:var(--muted);font-size:13px;font-weight:600}
+.console-link{margin-left:auto;border:0;background:transparent;color:var(--faint);font-size:13px;font-weight:600;cursor:pointer;padding:8px}
+.console-link:hover{color:var(--accent)}
 .stack{display:grid;gap:14px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .btn{border:1px solid var(--rule);background:var(--card);padding:8px 16px;border-radius:7px;cursor:pointer;font-weight:600}
@@ -147,7 +156,8 @@ details.all .card{background:var(--surface)}
 <body>
 
 <div class="top"><div class="top-in">
-  <div class="brand">Silver Giggle<small>Semaglutide specialist survey · rDNA vs synthetic · specialty pathways · v2.0</small></div>
+  <div class="brand">Silver Giggle<small>Specialist research survey</small></div>
+  <button class="console-link" type="button" data-view="dash">Study team</button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-survey" aria-selected="true" data-view="survey">Survey</button>
     <button class="tab" role="tab" id="tab-dash" aria-selected="false" data-view="dash">Dashboard</button>
@@ -208,9 +218,10 @@ function addDoc(doc) {
 
 /* ---------------- tabs ---------------- */
 let VIEW = 'survey';
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
 function show(v) {
   VIEW = v;
+  document.body.dataset.mode = v;
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v));
   ['survey','dash','data'].forEach(k => document.getElementById('view-' + k).hidden = k !== v);
   if (v === 'dash') renderDash(); if (v === 'data') renderData();
@@ -226,18 +237,18 @@ function renderSurvey(errors) {
   if (S.page === -1) {
     sv.innerHTML = `<div class="card intro">
       <div class="intro-grid"><div class="stack">
-        <span class="secname">Specialist survey</span>
+        <span class="secname">Clinical research survey</span>
         <h1>Silver Giggle</h1>
-        <p>This survey captures how gynaecology, endocrinology, diabetology and cardiology teams use GLP-1 therapies across patient types, how they think about rDNA-derived versus chemically synthesised products, and where referral pathways create friction.</p>
-        <p class="muted">About 15-20 minutes. Answers stay anonymous in the exported dataset. No product is promoted. Draft progress is saved on this device until submission.</p>
+        <p class="intro-copy">A focused specialist survey on how GLP-1 therapies are used across patient types, product choices, and referral pathways in clinical practice.</p>
+        <div class="pill-row"><span class="pill">15-20 minutes</span><span class="pill">Anonymous analysis</span><span class="pill">No product promotion</span></div>
+        <p class="muted">Your draft is saved on this device until you submit. You may skip any question or stop at any time.</p>
         <div class="row"><button class="btn primary" id="startBtn">${Object.keys(a).length ? 'Continue survey' : 'Start survey'}</button>${Object.keys(a).length ? '<button class="btn" id="resetBtn">Start over</button>' : ''}</div>
       </div><div class="intro-panel">
-        <div class="metric-row">
-          <div class="mini-metric"><b>${SCH.length}</b><span>coded questions</span></div>
-          <div class="mini-metric"><b>4</b><span>specialties</span></div>
-          <div class="mini-metric"><b>CSV</b><span>analysis export</span></div>
+        <div class="trust-list">
+          <div class="trust-item"><span class="trust-icon">1</span><p><b>Practice-based</b><span>Questions are about your own clinical experience and patient pathways.</span></p></div>
+          <div class="trust-item"><span class="trust-icon">2</span><p><b>Specialist-specific</b><span>The survey adapts for gynaecology, endocrinology, diabetology, and cardiology.</span></p></div>
+          <div class="trust-item"><span class="trust-icon">3</span><p><b>Aggregate reporting</b><span>Responses are reviewed as grouped findings, not as individual profiles.</span></p></div>
         </div>
-        <div class="banner info">Built for Cloudflare Pages as a static survey cockpit. Use Cloudflare Access or another authenticated route when collecting identifiable respondent data.</div>
       </div></div>
     </div>`;
     sv.querySelector('#startBtn').onclick = () => { S.page = 0; S.startedAt = S.startedAt || new Date().toISOString(); save(); renderSurvey(); };
@@ -780,7 +791,8 @@ document.addEventListener('mousemove', e => { const t = e.target.closest && e.ta
 
 /* ---------------- boot ---------------- */
 renderSurvey();
-const lastTab = store.get('sem_tab'); if (lastTab && lastTab !== 'survey') show(lastTab);
+const requestedView = location.hash.replace('#', '');
+if (['survey','dash','data'].includes(requestedView) && requestedView !== 'survey') show(requestedView);
 </script>
 </body>
 </html>
