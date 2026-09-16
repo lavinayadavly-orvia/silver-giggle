@@ -305,6 +305,16 @@ function renderSurvey(errors) {
   sv.querySelector('#nextBtn').onclick = next;
 }
 function save() { store.set('sem_draft', S); }
+function scrollToSurveyTop(behavior = 'smooth') {
+  const anchor = sv.querySelector('.progress') || sv;
+  const top = anchor.getBoundingClientRect().top + window.scrollY - document.querySelector('.top').offsetHeight - 18;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
+function scrollToQuestion(el, behavior = 'smooth') {
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - document.querySelector('.top').offsetHeight - 18;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
 function qHTML(q, a, err) {
   const v = a[q.id];
   let body = '';
@@ -348,7 +358,14 @@ function qHTML(q, a, err) {
 function bindQ(qs) {
   const a = S.answers, root = sv;
   const rerender = () => { save(); const y = window.scrollY; renderSurvey(); window.scrollTo(0, y); };
-  root.querySelectorAll('input[type=radio]').forEach(el => el.onchange = () => { const q = BY[el.name]; const c = +el.value; if (q.type === 'scoe') a[q.id] = { ...(a[q.id] || {}), v: c }; else a[q.id] = c; rerender(); });
+  const needsTypedFollowup = (q, c) => c === 97 || (q.type === 'scoe' && c === 1) || (q.id === 'G5' && c === 1);
+  root.querySelectorAll('input[type=radio]').forEach(el => el.onchange = () => {
+    const q = BY[el.name]; const c = +el.value;
+    if (q.type === 'scoe') a[q.id] = { ...(a[q.id] || {}), v: c }; else a[q.id] = c;
+    save();
+    if (needsTypedFollowup(q, c)) rerender();
+    else next();
+  });
   root.querySelectorAll('input[type=checkbox][name]').forEach(el => el.onchange = () => {
     const q = BY[el.name]; const c = +el.value; const ex = q.exclusive || [];
     let sel = q.type === 'mcsc' ? ((a[q.id] || {}).sel || []) : (a[q.id] || []);
@@ -377,7 +394,13 @@ function bindQ(qs) {
   root.querySelectorAll('[data-gdk]').forEach(el => el.onchange = () => { const id = el.dataset.gdk; const g = { ...(a[id] || {}) }; if (el.checked) g[el.dataset.i] = 98; else delete g[el.dataset.i]; a[id] = g; rerender(); });
   root.querySelectorAll('[data-flag]').forEach(el => el.onchange = () => { a[el.dataset.flag + '_fewer'] = el.checked; rerender(); });
   root.querySelectorAll('[data-seen]').forEach(el => el.oninput = () => { a[el.dataset.seen + '_seen'] = el.value === '' ? undefined : Number(el.value); save(); });
-  root.querySelectorAll('[data-gsc]').forEach(el => el.onclick = () => { const id = el.dataset.gsc; a[id] = { ...(a[id] || {}), [el.dataset.i]: +el.dataset.c }; rerender(); });
+  root.querySelectorAll('[data-gsc]').forEach(el => el.onclick = () => {
+    const id = el.dataset.gsc; const q = BY[id];
+    a[id] = { ...(a[id] || {}), [el.dataset.i]: +el.dataset.c };
+    save();
+    if (q.rows.every((_, i) => isNum((a[id] || {})[i]))) next();
+    else rerender();
+  });
 }
 function validate(q, a) {
   const v = a[q.id];
@@ -413,13 +436,13 @@ async function next() {
   const a = S.answers; const pages = pagesFor(a); const sec = pages[S.page];
   const qs = SCH.filter(q => q.sec === sec && visible(q, a));
   const errors = {}; qs.forEach(q => { const e = validate(q, a); if (e) errors[q.id] = e; });
-  if (Object.keys(errors).length) { renderSurvey(errors); const f = sv.querySelector('.qerr'); if (f) f.closest('.q').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (Object.keys(errors).length) { renderSurvey(errors); const f = sv.querySelector('.qerr'); scrollToQuestion(f && f.closest('.q')); return; }
   // clear answers for questions no longer visible
   SCH.forEach(q => { if (!visible(q, a) && a[q.id] !== undefined && q.sec !== SECS[0]) delete a[q.id]; });
   const t = terminated(a);
   if (t) return finish('screened_out', t);
   if (S.page === pages.length - 1) return finish('complete');
-  S.page++; save(); renderSurvey(); window.scrollTo(0, 0);
+  S.page++; save(); renderSurvey(); scrollToSurveyTop();
 }
 async function finish(status, reason) {
   const a = S.answers;
