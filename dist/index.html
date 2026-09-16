@@ -245,6 +245,81 @@ function fillZeroRemainder(q, a) {
   a[q.id] = g;
   return true;
 }
+function coherenceError(q, a) {
+  if (q.id === 'G2') {
+    const monthlyOutpatients = isNum(a.B1) ? a.B1 * 4 : null;
+    if (isNum(a.G2) && isNum(monthlyOutpatients) && a.G2 > monthlyOutpatients) {
+      return `This is higher than your earlier OPD volume. You reported ${a.B1} outpatients in a typical week, about ${monthlyOutpatients} per month, so the study estimate cannot exceed ${monthlyOutpatients}. Please revise this answer or the earlier OPD volume.`;
+    }
+  }
+  const monthlyOutpatients = isNum(a.B1) ? a.B1 * 4 : null;
+  const aboveMonthly = total => isNum(monthlyOutpatients) && total > monthlyOutpatients
+    ? `This is higher than your earlier OPD volume. You reported ${a.B1} outpatients in a typical week, about ${monthlyOutpatients} per month. Please revise this answer or the earlier OPD volume.`
+    : null;
+  if (q.id === 'C2' && a.C2) {
+    const total = q.rows.reduce((t, _, i) => t + (isNum(a.C2[i]) ? a.C2[i] : 0), 0);
+    const e = aboveMonthly(total); if (e) return e;
+  }
+  if (q.id === 'C3' && a.B2 && a.C3) {
+    const active = c => [1, 2, 3].includes(c);
+    const checks = [
+      { mix: 0, label: 'type 2 diabetes', rows: [0, 1, 2] },
+      { mix: 1, label: 'obesity', rows: [3, 4, 5, 7, 8, 9, 10, 11] },
+      { mix: 2, label: 'established cardiovascular disease', rows: [1, 4] },
+      { mix: 3, label: 'chronic kidney disease', rows: [2] },
+      { mix: 4, label: 'heart failure', rows: [5] },
+      { mix: 5, label: 'fatty liver disease', rows: [6] },
+      { mix: 6, label: 'women with obesity and a gynaecological condition', rows: [10] }
+    ];
+    for (const check of checks) {
+      if (a.B2[check.mix] !== 1) continue;
+      const badRows = check.rows.filter(i => active(a.C3[i]));
+      if (!badRows.length) continue;
+      const names = badRows.map(i => q.rows[i]).slice(0, 2).join('; ');
+      return `Earlier you said you see no patients with ${check.label}. Here you selected active semaglutide use or referral for: ${names}. Please revise this row or the earlier patient-mix answer.`;
+    }
+  }
+  if (q.id === 'C4' && a.B2 && Array.isArray(a.C4)) {
+    const selected = new Set(a.C4);
+    const checks = [
+      { mix: 0, label: 'type 2 diabetes', codes: [1, 2, 3] },
+      { mix: 1, label: 'obesity', codes: [4, 5, 6, 8, 9, 10, 11, 12] },
+      { mix: 2, label: 'established cardiovascular disease', codes: [2, 5] },
+      { mix: 3, label: 'chronic kidney disease', codes: [3] },
+      { mix: 4, label: 'heart failure', codes: [6] },
+      { mix: 5, label: 'fatty liver disease', codes: [7] },
+      { mix: 6, label: 'women with obesity and a gynaecological condition', codes: [11] }
+    ];
+    for (const check of checks) {
+      if (a.B2[check.mix] === 1 && check.codes.some(c => selected.has(c))) {
+        return `Earlier you said you see no patients with ${check.label}. Please revise this selection or the earlier patient-mix answer.`;
+      }
+    }
+  }
+  if (q.id === 'E2' && a.B2 && a.B2[6] === 1 && a.E2) {
+    const rows = q.rows.filter((_, i) => isNum(a.E2[i]) && a.E2[i] > 0);
+    if (rows.length) return `Earlier you said you see no women with obesity and a gynaecological condition. Please revise this count or the earlier patient-mix answer.`;
+  }
+  if (q.id === 'E4' && a.B2 && a.B2[6] === 1 && a.E4 === 1) {
+    return 'Earlier you said you see no women with obesity and a gynaecological condition, so “I already start it myself” is inconsistent. Please revise this answer or the earlier patient-mix answer.';
+  }
+  if (q.id === 'E10' && isNum(a.E10)) {
+    const e = aboveMonthly(a.E10); if (e) return e;
+  }
+  if (q.id === 'F1' && a.B2 && a.B2[0] === 1 && a.F1) {
+    const rows = q.rows.filter((_, i) => isNum(a.F1[i]) && a.F1[i] > 0);
+    if (rows.length) return 'Earlier you said you see no type 2 diabetes patients. Please revise these treatment-intensification counts or the earlier patient-mix answer.';
+  }
+  if (q.id === 'F3' && isNum(a.F3)) {
+    const e = aboveMonthly(a.F3); if (e) return e;
+  }
+  if (q.id === 'F5' && a.B2 && a.F5) {
+    const total = q.rows.reduce((t, _, i) => t + (isNum(a.F5[i]) ? a.F5[i] : 0), 0);
+    if (total > 0 && a.B2[0] === 1) return 'Earlier you said you see no type 2 diabetes patients. Please revise this cardiology count or the earlier patient-mix answer.';
+    if (total > 0 && a.B2[2] === 1) return 'Earlier you said you see no patients with established cardiovascular disease. Please revise this cardiology count or the earlier patient-mix answer.';
+  }
+  return null;
+}
 const SHOW = {
   C2: a => a.C1 === 1, C7: a => a.C1 === 1, C8: a => pos(a.C7),
   D1: a => { const g = a.C2 || {}; return pos(g[0]) || pos(g[1]); },
@@ -493,9 +568,9 @@ function validate(q, a) {
   const v = a[q.id];
   const opts = optionsFor(q, a);
   if (q.type === 'oe') return (q.required && q.id !== 'G4' && !String(v || '').trim()) ? 'Please answer this question.' : null;
-  if (q.type === 'sc') { if (!isNum(v)) return 'Please select an option.'; if (q.id === 'G5' && v === 1 && !String(a.G5_contact || '').trim()) return 'Please share an email address or phone number, or select No.'; if (v === 97 && opts.some(o => o.c === 97) && q.id !== 'A1' && q.id !== 'A2' && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'sc') { if (!isNum(v)) return 'Please select an option.'; if (q.id === 'G5' && v === 1 && !String(a.G5_contact || '').trim()) return 'Please share an email address or phone number, or select No.'; if (v === 97 && opts.some(o => o.c === 97) && q.id !== 'A1' && q.id !== 'A2' && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; const c = coherenceError(q, a); return c || null; }
   if (q.type === 'scoe') return (!v || !isNum(v.v)) ? 'Please select an option.' : null;
-  if (q.type === 'mc') { if (!v || !v.length) return 'Please select at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
+  if (q.type === 'mc') { if (!v || !v.length) return 'Please select at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; const c = coherenceError(q, a); return c || null; }
   if (q.type === 'mcsc') { if (!v || !(v.sel || []).length) return 'Please select at least one option.'; if (v.sel.filter(x => x < 90).length > 1 && !isNum(v.top)) return 'Please mark the most common reason.'; return null; }
   if (q.type === 'rank') { if (!v || !v.length) return 'Please choose at least one option.'; if (v.includes(97) && !String(a[q.id + '_other'] || '').trim()) return 'Please specify “Other”.'; return null; }
   if (q.type === 'num') {
@@ -503,6 +578,7 @@ function validate(q, a) {
     if (q.dkCode && v === q.dkCode && (q.max == null || v > q.max)) return null;
     if (v < (q.min ?? 0) || (q.max != null && v > q.max) || !Number.isInteger(v)) return `Please enter a whole number${q.max != null ? ` from ${q.min ?? 0} to ${q.max}` : ''}.`;
     if (q.id === 'A5' && v === 0) return null;
+    const coherent = coherenceError(q, a); if (coherent) return coherent;
     return null;
   }
   if (q.type === 'gridnum') {
@@ -516,9 +592,9 @@ function validate(q, a) {
     }
     if (q.sum100) { const vals = q.rows.map((_, i) => g[i]); if (!vals.some(x => x === 98)) { const s = vals.reduce((t, x) => t + x, 0); if (s !== 100) return `Shares should add to 100 (currently ${s}).`; } }
     if (q.flag && a[q.id + '_fewer']) { const seen = a[q.id + '_seen']; if (!isNum(seen) || seen < 1 || seen > 9) return 'Enter how many such women you have seen (1–9).'; if (q.rows.some((_, i) => g[i] > seen)) return 'No row can exceed the number of women seen.'; }
-    return null;
+    const c = coherenceError(q, a); return c || null;
   }
-  if (q.type === 'gridsc') { const g = v || {}; return q.rows.every((_, i) => isNum(g[i])) ? null : 'Please answer every row.'; }
+  if (q.type === 'gridsc') { const g = v || {}; if (!q.rows.every((_, i) => isNum(g[i]))) return 'Please answer every row.'; const c = coherenceError(q, a); return c || null; }
   return null;
 }
 async function next() {
