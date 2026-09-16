@@ -1,6 +1,6 @@
-# Semaglutide Specialist Survey
+# Silver Giggle
 
-Static Cloudflare Pages build for the semaglutide specialist survey cockpit.
+Static Cloudflare Pages build for Silver Giggle, a semaglutide specialist survey cockpit.
 
 ## Run locally
 
