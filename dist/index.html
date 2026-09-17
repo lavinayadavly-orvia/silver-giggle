@@ -164,6 +164,16 @@ textarea.txt{min-height:140px;resize:vertical}
 .tbl th,.tbl td{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
 .tbl th{color:var(--muted);font-weight:600}
 .tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.cohort-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cohort-tools label{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.cohort-tools select{border:1px solid var(--rule);border-radius:6px;padding:6px 9px;background:var(--card);color:var(--ink)}
+.cohort-table table{min-width:780px}
+.cohort-table th:not(:first-child),.cohort-table td:not(:first-child){text-align:right}
+.cohort-name{font-weight:700;color:var(--ink)}
+.cohort-table small{display:block;color:var(--faint);font-weight:400;margin-top:2px}
+.cohort-rate{display:inline-flex;align-items:center;justify-content:flex-end;gap:7px;min-width:92px;font-variant-numeric:tabular-nums}
+.cohort-rate i{display:block;width:42px;height:7px;background:var(--rule);border-radius:4px;overflow:hidden}
+.cohort-rate i:after{content:"";display:block;width:var(--rate);height:100%;background:var(--s500);border-radius:4px}
 details.all{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px 16px}
 details.all summary{cursor:pointer;font-weight:600}
 details.all .cards{margin-top:12px}
@@ -776,7 +786,7 @@ function downloadResponsePdf(doc) {
 
 /* ---------------- dashboard ---------------- */
 const dv = document.getElementById('view-dash');
-const F = Object.assign({ spec: 'all', inst: 'all', attn: true, sim: false }, store.get('sem_filters') || {});
+const F = Object.assign({ spec: 'all', inst: 'all', attn: true, sim: false, cohort: 'specialty' }, store.get('sem_filters') || {});
 const GRADED = ['Strong','Strong','Strong','Strong','Weak','Weak'];
 const SEQ = ['var(--s100)','var(--s200)','var(--s300)','var(--s400)','var(--s500)','var(--s600)','var(--s700)'];
 function docsAll() { return F.sim ? simDocs() : realDocs; }
@@ -840,6 +850,32 @@ function colShades(cols, asc) {
 }
 function heatColor(v) { const i = Math.min(SEQ.length - 1, Math.floor(v / (100 / SEQ.length))); return { bg: SEQ[i], ink: i >= 4 ? '#ffffff' : '#0b0b0b' }; }
 
+function cohortHTML(docs) {
+  const defs = {
+    specialty: { label: 'Specialty', groups: [['G', SPEC_NAME.G], ['E', SPEC_NAME.E], ['D', SPEC_NAME.D], ['C', SPEC_NAME.C]], key: d => d.specialty },
+    institution: { label: 'Institution sector', groups: [['public', 'Public sector'], ['private', 'Private or trust'], ['other', 'Other / not classified']], key: d => [1,2,3,4].includes(+d.inst) ? 'public' : [5,6].includes(+d.inst) ? 'private' : 'other' },
+    volume: { label: 'Weekly patient volume', groups: [['low', 'Under 50 patients'], ['mid', '50–99 patients'], ['high', '100+ patients'], ['unknown', 'Volume not reported']], key: d => { const v = ans(d, 'B1'); return !isNum(v) ? 'unknown' : v < 50 ? 'low' : v < 100 ? 'mid' : 'high'; } },
+    initiation: { label: 'Recent GLP-1 initiation', groups: [['yes', 'Started in last 3 months'], ['no', 'No recent starts'], ['unknown', 'Not reported']], key: d => ans(d, 'C1') === 1 ? 'yes' : [2,3].includes(ans(d, 'C1')) ? 'no' : 'unknown' }
+  };
+  const def = defs[F.cohort] || defs.specialty;
+  const rate = v => `<span class="cohort-rate"><i style="--rate:${v}%"></i>${v}%</span>`;
+  const rows = def.groups.map(([key, label]) => {
+    const group = docs.filter(d => def.key(d) === key);
+    if (!group.length) return '';
+    const weekly = group.map(d => ans(d, 'B1')).filter(isNum);
+    const recentBase = group.filter(d => isNum(ans(d, 'C1')));
+    const activeBase = group.filter(d => ans(d, 'C3'));
+    const active = activeBase.filter(d => Object.values(ans(d, 'C3') || {}).some(v => v === 1 || v === 2)).length;
+    const monthlyStarts = group.map(d => Object.values(ans(d, 'C2') || {}).filter(isNum).reduce((a, b) => a + b, 0)).filter((v, i) => ans(group[i], 'C2'));
+    const interestBase = group.filter(d => isNum(ans(d, 'G1')));
+    const feasible = group.map(d => ans(d, 'G2')).filter(isNum);
+    return `<tr><td><span class="cohort-name">${esc(label)}</span><small>${group.length < 5 ? 'Small base; interpret cautiously' : `${group.length} completed responses`}</small></td><td class="r">${group.length}</td><td class="r">${fmt(median(weekly), 0)}</td><td>${rate(pct(recentBase.filter(d => ans(d, 'C1') === 1).length, recentBase.length))}</td><td>${rate(pct(active, activeBase.length))}</td><td class="r">${fmt(mean(monthlyStarts))}</td><td>${rate(pct(interestBase.filter(d => [1,2].includes(ans(d, 'G1'))).length, interestBase.length))}</td><td class="r">${fmt(median(feasible), 0)}</td></tr>`;
+  }).join('');
+  return `<div class="card stack"><div class="cohort-tools"><label>Compare by <select id="cohortBy">${Object.entries(defs).map(([key, x]) => `<option value="${key}" ${F.cohort === key ? 'selected' : ''}>${esc(x.label)}</option>`).join('')}</select></label><span class="n">Current dashboard filters apply</span></div>
+    <div class="tbl cohort-table"><table><tr><th>Cohort</th><th>n</th><th>Median patients/week</th><th>Started GLP-1 recently</th><th>Uses semaglutide</th><th>Mean starts/month</th><th>Study interest</th><th>Median feasible/month</th></tr>${rows || '<tr><td colspan="8" class="empty">No completed responses in this view</td></tr>'}</table></div>
+    <div class="legend">“Uses semaglutide” means the respondent starts it routinely or selectively for at least one patient type. Study interest includes “Yes” and “Possibly”.</div></div>`;
+}
+
 function renderDash() {
   const all = docsAll();
   const docs = filtered(false);
@@ -879,6 +915,8 @@ function renderDash() {
         <div style="display:flex;align-items:flex-end;gap:4px;height:110px;padding-top:6px">${perDay.map((c, i) => `<div data-tip="${days[i]}: ${c}" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div style="height:${100 * c / maxDay}%;min-height:${c ? 3 : 1}px;background:${c ? 'var(--s500)' : 'var(--rule)'};border-radius:4px 4px 0 0"></div></div>`).join('')}</div>
         <div class="row n" style="justify-content:space-between;margin-top:4px"><span>${days[0].slice(5)}</span><span>${days[13].slice(5)}</span></div></div>
     </div></div>`);
+
+  h.push(`<div class="dsec" id="sec-cohorts"><header><h2>Cohort analysis</h2><p class="muted">Compare practice profile, treatment activity and research feasibility across respondent groups.</p></header>${cohortHTML(docs)}</div>`);
 
   // Core heatmap
   const C3 = BY.C3;
@@ -954,6 +992,7 @@ function renderDash() {
   dv.querySelector('#fInst').onchange = e => { F.inst = e.target.value; store.set('sem_filters', F); renderDash(); };
   dv.querySelector('#fAttn').onchange = e => { F.attn = e.target.checked; store.set('sem_filters', F); renderDash(); };
   dv.querySelector('#fSim').onchange = e => { F.sim = e.target.checked; store.set('sem_filters', F); renderDash(); };
+  const cohortBy = dv.querySelector('#cohortBy'); if (cohortBy) cohortBy.onchange = e => { F.cohort = e.target.value; store.set('sem_filters', F); renderDash(); };
   const ab = dv.querySelector('#aiBtn'); if (ab) ab.onclick = runAI;
 }
 function miniBar(v, color) { return `<span style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center" data-tip="${v}%"><span class="track"><span class="fill" style="width:${v}%;background:${color}"></span></span><span class="val">${v}%</span></span>`; }
